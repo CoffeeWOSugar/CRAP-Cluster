@@ -11,11 +11,12 @@
         # kör build.sh
 
 
-# while read node;do
-#     echo "$node"
-# done < nodes.cnf
+repo='CRAP-Cluster-node'
+gitCommand="
+GIT_SSH_COMMAND='ssh -p 22222 -o HostName=localhost -o User=git' && git clone git@localhost:CoffeeWOSugar/\"$repo\".git"
 
 
+nodeCommand="if [ ! -d \"$repo\" ]; then $gitCommand ; fi && cd \"$repo\" && git pull"
 
 while IFS="" read -r node || [ -n "$node" ]
 do
@@ -24,8 +25,12 @@ do
   pass="${arr[1]}"
 
   echo ">>> connecting to $node"
-  sshpass -p $pass ssh -A -R 22222:git@github.com:22 $name << 'EOF'
-echo "hej"
-EOF
+  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $name $nodeCommand
 
+  if [ $? -ne 0 ]; then
+	  echo "SSH to $node FAILED"
+  else
+	  echo "SSH to $node SUCCEEDED"
+  fi
 done < nodes.cnf
+
