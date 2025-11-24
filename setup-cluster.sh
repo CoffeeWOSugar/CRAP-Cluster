@@ -16,7 +16,8 @@ gitCommand="
 GIT_SSH_COMMAND='ssh -p 22222 -o HostName=localhost -o User=git' && git clone git@localhost:CoffeeWOSugar/\"$repo\".git"
 
 
-nodeCommand="if [ ! -d \"$repo\" ]; then $gitCommand ; fi && cd \"$repo\" && git pull"
+fetchBuilds="if [ ! -d \"$repo\" ]; then $gitCommand && chmod +x \"$repo\"/*.sh ; fi && cd \"$repo\" && git pull"
+buildBuilds="cd \"$repo\" && echo "vincent" | sudo -S ./build.sh"
 
 while IFS="" read -r node || [ -n "$node" ]
 do
@@ -25,12 +26,21 @@ do
   pass="${arr[1]}"
 
   echo ">>> connecting to $node"
-  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $name $nodeCommand
+  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $name $fetchBuilds
 
   if [ $? -ne 0 ]; then
-	  echo "SSH to $node FAILED"
+	  echo "FAILED to fetch dependencies at $node"
+	  break
   else
-	  echo "SSH to $node SUCCEEDED"
+	  echo "SUCCESS, dependencies fetched at $node"
+  fi
+  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $name $buildBuilds
+
+  if [ $? -ne 0 ]; then
+	  echo "FAILED to install build at $node"
+	  break
+  else
+	  echo "SUCESS! Build installed at $node"
   fi
 done < nodes.cnf
 
