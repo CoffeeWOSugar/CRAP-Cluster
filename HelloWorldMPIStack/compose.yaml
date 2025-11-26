@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  mpi:
+    image: mpi-test:latest
+    deploy:
+      replicas: 4     # ⬅ Try adjusting this!
+    networks:
+      - mpi-net
+
+networks:
+  mpi-net:
+    driver: overlay
