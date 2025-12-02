@@ -1,3 +1,8 @@
+# Node modules
+frontend/node_modules/
+
+# Environment variables
+frontend/.env
+
+# Local configs
 nodes.cnf
-frontend/node_modules/*
-frontend/node_modules

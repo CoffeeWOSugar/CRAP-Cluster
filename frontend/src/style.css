@@ -12,6 +12,10 @@
       font-family: 'ms_sans_serif', sans-serif;
     }
 
+p {
+  font-size: 16px;
+}
+
 #root {
   height: 100vh;
   margin: 0;
@@ -37,5 +41,11 @@
   /* Fills the remaining space below the title bar */
   overflow: auto;
   /* Scroll if content exceeds */
-  padding: 10px;
+  padding: 7.5% 20%;
+}
+
+.no-border-window {
+  border: none !important;
+  box-shadow: none !important;
+  background: none !important;
 }

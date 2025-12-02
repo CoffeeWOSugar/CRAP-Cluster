@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
+const { Client } = require('ssh2');
+const fs = require('fs');
 
 const isDev = !app.isPackaged;
 let win;
@@ -22,7 +24,6 @@ function createWindow() {
     win.loadFile(path.join(__dirname, "../index.html"));
   }
 }
-const { ipcMain } = require('electron');
 
 
 ipcMain.on('close-window', () => {
@@ -31,7 +32,23 @@ ipcMain.on('close-window', () => {
    app.quit();
   }
 });
-
+ipcMain.handle('connect-ssh', async (event, { host, privateKeyPath, username }) => {
+  return new Promise((resolve, reject) => {
+    const conn = new Client();
+    conn.on('ready', () => {
+      console.log(`SSH Connected to ${host}`);
+      resolve(`Connected to ${host}`);
+      conn.end();
+    }).on('error', (err) => {
+      reject(err.message);
+    }).connect({
+      host,
+      port: 22,
+      username,                    // can be fixed or passed dynamically
+      privateKey: fs.readFileSync(privateKeyPath)
+    });
+  });
+});
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
