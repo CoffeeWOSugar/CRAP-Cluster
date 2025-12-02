@@ -5,6 +5,7 @@ docker network create -d overlay mpi-net
 Docker build -t mpi-test:latest .
 
 # Publish to registry service
+docker compose push
 
 # Deploy the stack
 docker stack deploy -c compose.yaml mpi-test

@@ -13,7 +13,6 @@ WORKDIR /app
 COPY . .
 
 # Build the MPI program
-RUN mpicc -O3 -o hello hello.c
+RUN mpicc -O3 -o hello hello_world.c
 
-# Default runs our entrypoint script
-ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["mpirun", "--allow-run-as-root", "/app/hello"]

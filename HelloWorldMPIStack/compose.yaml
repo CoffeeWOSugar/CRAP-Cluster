@@ -1,10 +1,16 @@
-version: "3.8"
-
 services:
-  mpi:
-    image: mpi-test:latest
+  mpi-master:
+    image: 192.168.10.3:5000/mpi-test:latest
+    user: root
     deploy:
-      replicas: 4     # ⬅ Try adjusting this!
+      replicas: 1
+    networks:
+      - mpi-net
+  mpi-worker:
+    image: 192.168.10.3:5000/mpi-test:latest 
+    user: root
+    deploy:
+      replicas: 2
     networks:
       - mpi-net
 

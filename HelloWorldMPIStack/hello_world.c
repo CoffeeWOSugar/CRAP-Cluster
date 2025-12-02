@@ -1,5 +1,7 @@
 #include <mpi.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <stdbool.h>
 
 int main(int argc, char** argv) {
     MPI_Init(NULL, NULL);
@@ -9,8 +11,12 @@ int main(int argc, char** argv) {
 
     int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-    printf("Hello from rank %d of %d\n", world_rank, world_size);
+    
+    while(true) {
+        printf("Hello from rank %d of %d\n", world_rank, world_size);
+        fflush(stdout);
+        sleep(1);
+    }
 
     MPI_Finalize();
     return 0;
