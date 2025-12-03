@@ -12,16 +12,16 @@ const handleConnect = async () => {
     host = parts[1];
   }
 
-  try {
+  // try {
     const result = await window.electronAPI.connectSSH({
       host,
       username,
       privateKeyPath // path to your private key
     });
-    alert(result);
-  } catch (err) {
-    alert('Connection failed: ' + err);
-  }
+  //   alert(result);
+  // } catch (err) {
+  //   alert('Connection failed: ' + err);
+  // }
 };
 
 export default handleConnect;

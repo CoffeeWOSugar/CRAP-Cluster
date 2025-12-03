@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import "98.css";
 import { useNavigate } from 'react-router-dom';
-import '../style.css'
+import '../style.css';
 import AasciArt from '../components/AasciArt';
 import handleConnect from '../features/server';
 
 const Home = () => {
   const navigate = useNavigate();
+  const [isConnected, setIsConnected] = useState(false); // track SSH status
+  const [isConnecting, setIsConnecting] = useState(false); // optional: track loading
+  const [resultMsg, setResultMsg] = useState("")
+
+  const handleConnectClick = async () => {
+    setIsConnecting(true);
+    setIsConnected(null);        
+    setResultMsg("");
+    try {
+      const result = await handleConnect(); // call your existing SSH function
+      setIsConnected(true); // mark connection as successful
+      setResultMsg("Connection successful!");
+    } catch (err) {
+      setIsConnected(false);
+      setResultMsg('Connection failed: ' + err)
+      // alert('Connection failed: ' + err);
+
+    } finally {
+      setIsConnecting(false);
+
+    }
+  };
+
   return (
     <div className='window'>
       <div className='title-bar'>
@@ -25,9 +48,25 @@ const Home = () => {
           <label htmlFor="textHost">Host</label>
           <input id="textHost" type="text" placeholder="e.g., 192.168.1.100"/>
         </div>
+        {isConnected !== null && (
+          <p style={{
+            fontSize: "12px",
+            marginTop: "10px",
+            color: isConnected ? "green" : "red",
+          }}>
+            {resultMsg}
+          </p>
+        )}
         <div className="field-row" style={{ justifyContent: "left", paddingTop: "20px" }}>
-          <button onClick={handleConnect}>Connect</button>
-          <button onClick={() => navigate('/configure')}>Next</button>
+          <button onClick={handleConnectClick} disabled={isConnecting}>
+            {isConnecting ? 'Connecting...' : 'Connect'}
+          </button>
+          <button 
+            onClick={() => navigate('/configure')} 
+            disabled={!isConnected} // disable until SSH succeeds
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
