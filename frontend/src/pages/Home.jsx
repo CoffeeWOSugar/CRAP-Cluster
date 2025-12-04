@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import "98.css";
 import { useNavigate } from 'react-router-dom';
 import '../style.css';
@@ -10,6 +11,19 @@ const Home = () => {
   const [isConnected, setIsConnected] = useState(false); // track SSH status
   const [isConnecting, setIsConnecting] = useState(false); // optional: track loading
   const [resultMsg, setResultMsg] = useState("")
+  const [dots, setDots] = useState("")
+
+
+  useEffect(() => {
+    if (!isConnecting) {
+      setDots(""); // reset when not connecting
+      return;
+    }
+    const interval = setInterval(() => {
+      setDots(prev => (prev.length < 3 ? prev + "." : ""));
+    }, 500); // change every 500ms
+    return () => clearInterval(interval); // cleanup
+  }, [isConnecting]);
 
   const handleConnectClick = async () => {
     setIsConnecting(true);
@@ -45,8 +59,8 @@ const Home = () => {
         <p>Welcome to the <strong>Circular Resource-limited Application Platform Cluster</strong>!</p>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id sapien condimentum, blandit velit in, luctus magna. Vivamus at sapien eu ante ullamcorper finibus. Praesent finibus arcu elit, ac condimentum massa interdum in. Ut porttitor augue nunc, vehicula finibus purus auctor eget. Proin convallis tincidunt sem vel accumsan. Suspendisse suscipit urna quam, at efficitur erat mollis sit amet.</p>
         <div className="field-row-stacked" style={{width: "200px"}}>
-          <label htmlFor="textHost">Host</label>
-          <input id="textHost" type="text" placeholder="e.g., 192.168.1.100"/>
+          <label style={{fontSize: "14px"}} htmlFor="textHost">Hostname</label>
+          <input style={{fontSize: "14px", height: "24px", width: "200px"}} id="textHost" type="text" placeholder="e.g., user@127.0.0.1"/>
         </div>
         {isConnected !== null && (
           <p style={{
@@ -58,10 +72,15 @@ const Home = () => {
           </p>
         )}
         <div className="field-row" style={{ justifyContent: "left", paddingTop: "20px" }}>
-          <button onClick={handleConnectClick} disabled={isConnecting}>
-            {isConnecting ? 'Connecting...' : 'Connect'}
+          <button className='basic-button' 
+            onClick={handleConnectClick} 
+            disabled={isConnecting}
+          >
+            {/* {isConnecting ? 'Connecting...' : 'Connect'} */}
+            {isConnecting ? `Connecting${dots}` : 'Connect'}
           </button>
-          <button 
+
+          <button className='basic-button'
             onClick={() => navigate('/configure')} 
             disabled={!isConnected} // disable until SSH succeeds
           >

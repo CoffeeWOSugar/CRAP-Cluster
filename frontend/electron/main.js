@@ -3,6 +3,7 @@ const path = require('path');
 const { Client } = require('ssh2');
 const fs = require('fs');
 
+
 const isDev = !app.isPackaged;
 let win;
 function createWindow() {
