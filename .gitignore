@@ -1,3 +1,4 @@
+
 # Node modules
 frontend/node_modules/
 
@@ -6,3 +7,4 @@ frontend/.env
 
 # Local configs
 nodes.cnf
+hosts
