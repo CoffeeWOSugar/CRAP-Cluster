@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# VARS
+MANAGER_IP=$(awk '/# Manager node/{getline; print}' hosts)
+
 # Check if docker is installed
 if [[ "$(which docker | wc -l)" -eq "0" ]]; then
   echo "Docker installation is missing."
@@ -8,7 +11,7 @@ fi
 
 # Docker swarm init on manager
 sudo docker swarm leave --force
-swarm_init_output=$(sudo docker swarm init --advertise-addr 192.168.10.1)
+swarm_init_output=$(sudo docker swarm init --advertise-addr "$MANAGER_IP")
 echo "$swarm_init_output"
 join_command=$(printf "%s\n" "$swarm_init_output" | grep "docker swarm join")
 
