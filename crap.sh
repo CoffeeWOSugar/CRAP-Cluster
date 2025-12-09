@@ -21,24 +21,37 @@ usage() {
   echo "Usage: $0 "
   echo
   echo "Options:"
-  echo "	help        Display help message"
-  echo "	cluster-up  setup-cluster"
+  echo "	help          Display help message"
+  echo "	cluster-up    setup-cluster"
   echo "	cluster-down  Shutdown cluster and power off machines"
-  echo "	swarm-init  Initialize swarm"
-  echo "	swarm-down  Shutdown and leave swarm"
+  echo "	swarm-init    Initialize swarm"
+  echo "	swarm-down    Shutdown and leave swarm"
   exit 1
 }
 
+setup_ssh() {
+  if [ -n "$SSH_AGENT_PID" ] && ps -p "$SSH_AGENT_PID" >/dev/null 2>&1; then
+    echo "ssh-agent is already running and has keys loaded."
+  else
+    echo "Starting a new ssh-agent..."
+    eval "$(ssh-agent -s)"
+    ssh-add
+  fi
+}
+
 cluster-up() {
+  setup_ssh
   ./setup-cluster.sh
 }
 
 swarm-init() {
+  setup_ssh
   ./swarm_setup.sh
 }
 
 # Power down cluster
 cluster-down() {
+  setup-ssh
   echo "Shutting down cluster and powering off machines"
 
   while IFS="" read -r node || [ -n "$node" ]; do
@@ -52,6 +65,7 @@ cluster-down() {
 }
 
 swarm-down() {
+  setup-ssh
   echo "Leaving swarm"
 
   while IFS="" read -r node || [ -n "$node" ]; do
