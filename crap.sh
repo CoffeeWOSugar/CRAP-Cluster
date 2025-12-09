@@ -43,7 +43,7 @@ setup_ssh() {
 
 cluster-up() {
   setup_ssh
-  $SCRIPT_FOLDER/setup-cluster.sh
+  $SCRIPT_FOLDER/cluster_setup.sh
 }
 
 swarm-init() {
