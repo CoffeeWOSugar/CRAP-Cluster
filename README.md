@@ -27,11 +27,32 @@ cd CRAP-Cluster
 EXAMPLE SETUP
 ```
 
+
+**Configuration files**
+Add the usernames and IP adresses of the worker nodes in the file
+nodes.cnf:
+```bash
+user@adress password
+user@adress password
+```
+
+Add the hosts to the file hosts
+```bash
+# Manager node 
+IPadress
+
+# Worker nodes 
+IPadress
+IPadress
+```
+
+
 ---
 
 ## Usage
 
 INSTRUCTIONS
+
 
 ---
 
