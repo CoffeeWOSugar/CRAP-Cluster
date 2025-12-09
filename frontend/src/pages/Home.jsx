@@ -35,7 +35,8 @@ const Home = () => {
       setResultMsg("Connection successful!");
     } catch (err) {
       setIsConnected(false);
-      setResultMsg('Connection failed: ' + err)
+      // setResultMsg('Connection failed: ' + err)
+      setResultMsg('Connection failed!')
       // alert('Connection failed: ' + err);
 
     } finally {
@@ -47,7 +48,7 @@ const Home = () => {
   return (
     <div className='window'>
       <div className='title-bar'>
-        <div className="title-bar-text">Counter</div>
+        <div className="title-bar-text">CRAP</div>
         <div className='title-bar-text'>Home</div>
         <div className="title-bar-controls">
           <button aria-label="Close" onClick={() => window.electronAPI.close()} />
