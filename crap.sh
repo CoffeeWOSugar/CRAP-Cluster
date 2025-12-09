@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#
+SCRIPT_FOLDER=aux_scripts
 crap() {
   echo
   echo " ██████╗██████╗  █████╗ ██████╗ ██╗"
@@ -41,12 +43,12 @@ setup_ssh() {
 
 cluster-up() {
   setup_ssh
-  ./setup-cluster.sh
+  $SCRIPT_FOLDER/setup-cluster.sh
 }
 
 swarm-init() {
   setup_ssh
-  ./swarm_setup.sh
+  $SCRIPT_FOLDER/swarm_setup.sh
 }
 
 # Power down cluster

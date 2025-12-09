@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # VARS
-MANAGER_IP=$(awk '/# Manager node/{getline; print}' hosts)
+CONF_DIR=config
+MANAGER_IP=$(awk '/# Manager node/{getline; print}' $CONF_DIR/hosts)
 
 # Check if docker is installed
 if [[ "$(which docker | wc -l)" -eq "0" ]]; then
@@ -30,5 +31,5 @@ while IFS="" read -r node || [ -n "$node" ]; do
   sshpass -p "$pass" ssh -n -q -A "$name" "echo 'vincent' | sudo -S docker swarm leave --force"
   sshpass -p "$pass" ssh -n -q -A "$name" "echo 'vincent' | sudo -S bash -c '$join_command'"
 
-done <nodes.cnf
+done <$CONF_DIR/nodes.cnf
 sudo docker node ls
