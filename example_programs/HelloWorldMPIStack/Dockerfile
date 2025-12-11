@@ -31,7 +31,7 @@ RUN chmod +x /usr/local/bin/node_entrypoint.sh
 
 ENV ENTRYPOINT_TYPE=node
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/entrypoint.sh"]
 
 # Default command (overridden by services)
 CMD ["/bin/bash"]

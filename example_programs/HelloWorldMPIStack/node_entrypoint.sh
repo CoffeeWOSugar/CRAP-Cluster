@@ -6,15 +6,20 @@ set -e
 # Ensure ssh host keys directory exists
 mkdir -p /var/run/sshd
 
-# Generate root SSH keypair if it doesn't exist
-if [ ! -f /root/.ssh/id_rsa ]; then
-    echo "[entrypoint] Generating SSH keypair for root..."
-    mkdir -p /root/.ssh
-    ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
-    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
-    chmod 700 /root/.ssh
-    chmod 600 /root/.ssh/authorized_keys
-fi
+
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+cat ssh/id_ed25519.pub >> /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+
+# Create SSH config for root
+cat <<EOF > /root/.ssh/config
+Host *
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+EOF
+chmod 600 /root/.ssh/config
+
 
 # Relax a couple of defaults for containers
 if grep -q "^#PermitRootLogin" /etc/ssh/sshd_config; then
@@ -27,6 +32,8 @@ fi
 if grep -q "session\s\+required\s\+pam_loginuid.so" /etc/pam.d/sshd; then
     sed -i 's/session\s\+required\s\+pam_loginuid.so/session optional pam_loginuid.so/' /etc/pam.d/sshd
 fi
+
+
 
 echo "[entrypoint] Starting sshd..."
 /usr/sbin/sshd
