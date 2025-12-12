@@ -1,7 +1,6 @@
 services:
   master:
     image: 192.168.10.1:5000/mpi-test:latest
-    user: root
     environment:
       - ENTRYPOINT_TYPE=root
     deploy:
@@ -11,14 +10,15 @@ services:
           - node.role == manager
     networks:
       - net
-    command: ["bash", "/app/root_entrypoint.sh"]
   worker:
     image: 192.168.10.1:5000/mpi-test:latest
-    user: root
     environment:
       - ENTRYPOINT_TYPE=node
     deploy:
       replicas: 2
+      placement:
+       constraints:
+        - node.role == worker
     networks:
       - net
     command: ["sleep", "infinity"]
