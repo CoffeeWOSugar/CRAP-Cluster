@@ -1,4 +1,7 @@
-FROM ubuntu:22.04
+###################################
+# BUILD MPI PROGRAM
+###################################
+FROM ubuntu:22.04 AS build
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -6,33 +9,45 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         openmpi-bin \
-        libopenmpi-dev \
-        openssh-server && \
+        libopenmpi-dev && \
     rm -rf /var/lib/apt/lists/*
 
-# SSH daemon needs this
-RUN mkdir -p /var/run/sshd
-
 WORKDIR /app
-COPY . .
+COPY src/ src/
 
 # Build the MPI program
-RUN mpicc -O3 -o hello hello_world.c
+RUN mpicc -O3 -o hello src/hello_world.c && strip hello
 
-# Our entrypoint will start sshd, then exec the CMD/command from compose
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+###################################
+# SLIM RUNTIME IMAGE
+###################################
+FROM ubuntu:22.04
 
-COPY root_entrypoint.sh /usr/local/bin/root_entrypoint.sh
-RUN chmod +x /usr/local/bin/root_entrypoint.sh
+ENV DEBIAN_FRONTEND=noninteractive
 
-COPY node_entrypoint.sh /usr/local/bin/node_entrypoint.sh
-RUN chmod +x /usr/local/bin/node_entrypoint.sh
+# ONLY the runtime dependancies
+RUN apt-get update && \ 
+    apt-get install -y --no-install-recommends \
+      openmpi-bin \
+      openssh-server && \
+    rm -rf /var/lib/apt/lists/*
+
+# SSH Daemon needs this:
+RUN mkdir -p /var/run/sshd/
+
+WORKDIR /app
+
+# Copy the executable
+COPY --from=build /app/hello /app/hello
+
+# Copy the entrypoint scripts
+COPY docker/entrypoints/ /opt/mpi/bin/
+RUN chmod +x /opt/mpi/bin/*.sh
+
+# Copy ssh files
+COPY ssh/ /app/ssh/
 
 ENV ENTRYPOINT_TYPE=node
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# Default command (overridden by services)
+ENTRYPOINT ["/bin/bash", "/opt/mpi/bin/entrypoint.sh"]
 CMD ["/bin/bash"]
-
