@@ -24,8 +24,6 @@ while IFS="" read -r node || [ -n "$node" ]; do
   arr=($node)
   name="${arr[0]}"
   pass="${arr[1]}"
-  echo "$name"
-  echo "$pass"
 
   echo ">>> connecting $node to swarm..."
   sshpass -p "$pass" ssh -n -q -A "$name" "echo 'vincent' | sudo -S docker swarm leave --force"
