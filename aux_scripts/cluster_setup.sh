@@ -40,7 +40,7 @@ while getopts ":hv" o; do
     usage
     ;;
   v)
-    verbose="-v"}
+    verbose="-v"
     ;;
   *)
     usage
