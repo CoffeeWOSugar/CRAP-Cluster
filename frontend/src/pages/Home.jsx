@@ -4,7 +4,7 @@ import "98.css";
 import { useNavigate } from 'react-router-dom';
 import '../style.css';
 import AasciArt from '../components/AasciArt';
-import handleConnect from '../features/server';
+import {handleConnect} from '../features/server';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -25,25 +25,29 @@ const Home = () => {
     return () => clearInterval(interval); // cleanup
   }, [isConnecting]);
 
-  const handleConnectClick = async () => {
-    setIsConnecting(true);
-    setIsConnected(null);        
-    setResultMsg("");
-    try {
-      const result = await handleConnect(); // call your existing SSH function
-      setIsConnected(true); // mark connection as successful
-      setResultMsg("Connection successful!");
-    } catch (err) {
-      setIsConnected(false);
-      // setResultMsg('Connection failed: ' + err)
-      setResultMsg('Connection failed!')
-      // alert('Connection failed: ' + err);
+ const handleConnectClick = async () => {
+  setIsConnecting(true);
+  setIsConnected(null);        
+  setResultMsg("");
+  const inputEl = document.getElementById('textHost');
+  if (!inputEl) {
+    setResultMsg("Hostname input not found!");
+    setIsConnecting(false);
+    return;
+  }
+  const input = inputEl.value;
 
-    } finally {
-      setIsConnecting(false);
-
-    }
-  };
+  try {
+    const result = await handleConnect(input); // pass input explicitly
+    setIsConnected(true);
+    setResultMsg("Connection successful!");
+  } catch (err) {
+    setIsConnected(false);
+    setResultMsg("Connection failed!");
+  } finally {
+    setIsConnecting(false);
+  }
+};
 
   return (
     <div className='window'>

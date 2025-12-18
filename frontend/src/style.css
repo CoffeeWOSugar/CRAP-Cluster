@@ -58,3 +58,16 @@ p {
   box-shadow: none !important;
   background: none !important;
 }
+
+/* .interactive tbody {
+  display: block;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.interactive{
+  display: table;
+  width: 100%; 
+  table-layout: fixed;
+} */
+
