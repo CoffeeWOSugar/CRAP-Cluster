@@ -31,7 +31,7 @@ usage() {
   exit 1
 }
 
-setup_ssh() {
+setup-ssh() {
   if [ -n "$SSH_AGENT_PID" ] && ps -p "$SSH_AGENT_PID" >/dev/null 2>&1; then
     echo "ssh-agent is already running and has keys loaded."
   else
@@ -51,6 +51,10 @@ swarm-init() {
   $SCRIPT_FOLDER/swarm_setup.sh
 }
 
+registry-init() {
+  $SCRIPT_FOLDER/registry_setup.sh
+}
+
 # Power down cluster
 cluster-down() {
   setup-ssh
@@ -62,7 +66,7 @@ cluster-down() {
     pass="${arr[1]}"
     echo ">>> node $node shutting down..."
     sshpass -p "$pass" ssh -n -q -A "$name" "echo 'vincent' | sudo -S shutdown now"
-  done <nodes.cnf
+  done <config/nodes.cnf
 
 }
 
@@ -76,7 +80,7 @@ swarm-down() {
     pass="${arr[1]}"
     echo ">>> node $node leaving swarm..."
     sshpass -p "$pass" ssh -n -q -A "$name" "echo 'vincent' | sudo -S docker swarm leave --force"
-  done <nodes.cnf
+  done <config/nodes.cnf
 
   echo ">> master node leaving swarm..."
   sudo docker swarm leave --force
@@ -98,6 +102,12 @@ while [ "$1" != "" ]; do
     ;;
   swarm-init)
     swarm-init
+    ;;
+  registry-init)
+    registry-init
+    ;;
+  elsas-run)
+    ./example_programs/HelloWorldMPIStack/build_deploy.sh
     ;;
   swarm-down)
     swarm-down
