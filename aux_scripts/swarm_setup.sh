@@ -2,7 +2,7 @@
 
 # VARS
 CONF_DIR=config
-MANAGER_IP=$(awk '/# Manager node/{getline; print}' $CONF_DIR/hosts)
+MANAGER_IP=$(awk '/# Manager node/{getline; print}' $CONF_DIR/nodes.cnf)
 DEBUG=0
 
 #parse debug option
