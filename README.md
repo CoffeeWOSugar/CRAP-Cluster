@@ -29,21 +29,15 @@ EXAMPLE SETUP
 
 
 **Configuration files**
-Add the usernames and IP adresses of the worker nodes in the file
-nodes.cnf:
-```bash
-user@adress password
-user@adress password
-```
+Add the information about the nodes in the file configuration/nodes.cnf on the following format: 
 
-Add the hosts to the file hosts
 ```bash
 # Manager node 
-IPadress
+IP-adress
 
 # Worker nodes 
-IPadress
-IPadress
+user IP-adress password
+user IP-adress password
 ```
 
 

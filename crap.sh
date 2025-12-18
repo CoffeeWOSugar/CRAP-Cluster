@@ -2,6 +2,7 @@
 
 #
 SCRIPT_FOLDER=aux_scripts
+CONF_FOLDER=config
 crap() {
   echo
   echo " ██████╗██████╗  █████╗ ██████╗ ██╗"
@@ -56,13 +57,13 @@ cluster-down() {
   setup-ssh
   echo "Shutting down cluster and powering off machines"
 
-  while IFS="" read -r node || [ -n "$node" ]; do
-    arr=($node)
-    name="${arr[0]}"
-    pass="${arr[1]}"
-    echo ">>> node $node shutting down..."
-    sshpass -p "$pass" ssh -n -q -A "$name" "echo 'vincent' | sudo -S shutdown now"
-  done <nodes.cnf
+  while read -r user ip pass; do
+    ssh="$user@$ip"
+    echo ">>> node $ip shutting down..."
+    sshpass -p "$pass" ssh -n -q -A "$ssh" "echo 'vincent' | sudo -S shutdown now"
+  done < <(
+    grep -vE '^\s*#|^\s*$' $CONF_FOLDER/nodes.cnf | tail -n +2
+  )
 
 }
 
@@ -70,13 +71,13 @@ swarm-down() {
   setup-ssh
   echo "Leaving swarm"
 
-  while IFS="" read -r node || [ -n "$node" ]; do
-    arr=($node)
-    name="${arr[0]}"
-    pass="${arr[1]}"
-    echo ">>> node $node leaving swarm..."
-    sshpass -p "$pass" ssh -n -q -A "$name" "echo 'vincent' | sudo -S docker swarm leave --force"
-  done <nodes.cnf
+  while read -r user ip pass; do
+    ssh="$user@$ip"
+    echo ">>> node $ip leaving swarm..."
+    sshpass -p "$pass" ssh -n -q -A "$ssh" "echo 'vincent' | sudo -S docker swarm leave --force"
+  done < <(
+    grep -vE '^\s*#|^\s*$' $CONF_FOLDER/nodes.cnf | tail -n +2
+  )
 
   echo ">> master node leaving swarm..."
   sudo docker swarm leave --force
