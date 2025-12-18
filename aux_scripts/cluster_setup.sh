@@ -51,26 +51,29 @@ done
 fetchBuilds="if [ ! -d \"$repo\" ]; then $gitCommand && chmod +x \"$repo\"/*.sh ; fi && cd \"$repo\" && git pull"
 buildBuilds="cd \"$repo\" && echo "vincent" | sudo -S ./build.sh "${verbose}""
 
-while IFS="" read -r node || [ -n "$node" ]; do
-  arr=($node)
-  name="${arr[0]}"
-  pass="${arr[1]}"
+while read -r user ip pass; do
+  ssh="$user@$ip"
+  echo $user
+  echo $ip
+  echo $pass
 
-  echo ">>> connecting to $node"
-  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $name $fetchBuilds
-
-  if [ $? -ne 0 ]; then
-    echo "FAILED to fetch dependencies at $node"
-    break
-  else
-    echo "SUCCESS, dependencies fetched at $node"
-  fi
-  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $name $buildBuilds
+  echo ">>> connecting to $ssh"
+  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $ssh $fetchBuilds
 
   if [ $? -ne 0 ]; then
-    echo "FAILED to install build at $node"
+    echo "FAILED to fetch dependencies at $ip"
     break
   else
-    echo "SUCESS! Build installed at $node"
+    echo "SUCCESS, dependencies fetched at $ip"
   fi
-done <$CONF_DIR/nodes.cnf
+  sshpass -p $pass ssh -n -q -A -R 22222:github.com:22 $ssh $buildBuilds
+
+  if [ $? -ne 0 ]; then
+    echo "FAILED to install build at $ip"
+    break
+  else
+    echo "SUCESS! Build installed at $ip"
+  fi
+done < <(
+  grep -vE '^\s*#|^\s*$' $CONF_DIR/nodes.cnf | tail -n +2
+)
