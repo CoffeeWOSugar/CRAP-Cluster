@@ -18,10 +18,7 @@ const handleConnect = async () => {
       username,
       privateKeyPath // path to your private key
     });
-  //   alert(result);
-  // } catch (err) {
-  //   alert('Connection failed: ' + err);
-  // }
+
 };
 
 export default handleConnect;
