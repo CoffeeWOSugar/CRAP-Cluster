@@ -32,7 +32,7 @@ usage() {
   exit 1
 }
 
-setup_ssh() {
+setup-ssh() {
   if [ -n "$SSH_AGENT_PID" ] && ps -p "$SSH_AGENT_PID" >/dev/null 2>&1; then
     echo "ssh-agent is already running and has keys loaded."
   else
@@ -50,6 +50,10 @@ cluster-up() {
 swarm-init() {
   setup_ssh
   $SCRIPT_FOLDER/swarm_setup.sh
+}
+
+registry-init() {
+  $SCRIPT_FOLDER/registry_setup.sh
 }
 
 # Power down cluster
@@ -99,6 +103,12 @@ while [ "$1" != "" ]; do
     ;;
   swarm-init)
     swarm-init
+    ;;
+  registry-init)
+    registry-init
+    ;;
+  elsas-run)
+    ./example_programs/HelloWorldMPIStack/build_deploy.sh
     ;;
   swarm-down)
     swarm-down
