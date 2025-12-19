@@ -98,6 +98,7 @@ schedule() {
     echo "Usage: ./crap.sh schedule <program_path> [options]"
     echo
     echo "Options:"
+    echo "    -timeout DURATION		  Terminate program after some time"
     echo "    -time [HH:MM] [day]           Schedule a one-time job"
     echo "    -repeat MIN HOUR DOM MON DOW  Schedule a repeating job (cron syntax)"
     echo
@@ -105,16 +106,29 @@ schedule() {
     echo "Remove jobs using crontab -r and atrm [job_id]"
     echo
     echo "Example:"
-    echo "    ./crap.sh schedule example_programs/HelloWorldMPIStack/build_deploy.sh -time 22:00 today"
-    echo "    ./crap.sh schedule example_programs/HelloWorldMPIStack/build_deploy.sh -repeat 0 22"
+    echo "    ./crap.sh schedule example_programs/HelloWorldMPIStack/build_deploy.sh -timeout 1h -time 22:00 today"
+    echo "    ./crap.sh schedule example_programs/HelloWorldMPIStack/build_deploy.sh -timeout 10m -repeat 0 22"
+    echo
+    echo "Note: -timeout must appear before -time and -repeat"
     exit 0
   fi
 
   while [ $# -gt 0 ]; do
     case "$1" in
+      -timeout)
+        shift
+        TIMEOUT="$1"
+        shift
+        ;;
+
       -time)
         shift
-        echo "$PROGRAM_PATH" | at "$1" "$2" 2> /tmp/at_error.log || {
+        if [ -n "$TIMEOUT" ]; then
+          CMD="timeout $TIMEOUT $PROGRAM_PATH"
+        else
+          CMD="$PROGRAM_PATH"
+        fi
+        echo "$CMD" | at "$1" "$2" 2> /tmp/at_error.log || {
           echo "Error: Follow syntax -time [HH:MM] [day]" >&2
           echo "Example: -time 22:00 today"
           exit 1
@@ -135,8 +149,13 @@ schedule() {
         while [ "${#args[@]}" -lt 5 ]; do
           args+=("*")
         done
+        if [ -n "$TIMEOUT" ]; then
+          CMD="timeout $TIMEOUT $PROGRAM_PATH"
+        else
+          CMD="$PROGRAM_PATH"
+        fi
 
-        cron_line="${args[0]} ${args[1]} ${args[2]} ${args[3]} ${args[4]} $PROGRAM_PATH"
+        cron_line="${args[0]} ${args[1]} ${args[2]} ${args[3]} ${args[4]} $CMD"
         (crontab -l 2>/dev/null; echo "$cron_line") | crontab -
         echo "All cron jobs:"
         crontab -l
