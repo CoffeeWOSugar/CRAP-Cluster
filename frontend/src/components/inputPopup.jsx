@@ -24,9 +24,10 @@ export default function Popup({ onDone, onClose }) {
         </div>
       </div>
 
-      <div className="window-body">
+
+      <div className="window-body" style={{ padding: "5px 35px 0px" }}>
         <div className="field-row-stacked">
-          <label>First Input</label>
+          <label style = {{fontSize: "14px"}}>SSH name:</label>
           <input
             type="text"
             value={input1}
@@ -35,7 +36,7 @@ export default function Popup({ onDone, onClose }) {
         </div>
 
         <div className="field-row-stacked" style={{ marginTop: 8 }}>
-          <label>Second Input</label>
+          <label style = {{fontSize: "14px"}}>Password:</label>
           <input
             type="text"
             value={input2}
@@ -45,10 +46,13 @@ export default function Popup({ onDone, onClose }) {
 
         <div
           className="field-row"
-          style={{ justifyContent: "flex-end", marginTop: 16 }}
+          style={{ justifyContent: "center", marginTop: 16 }}
         >
-          <button onClick={onClose}>Exit</button>
+          <button 
+            className = "basic-button"
+            onClick={onClose}>Exit</button>
           <button
+            className = "basic-button"
             onClick={handleDone}
             disabled={isDoneDisabled}
             style={{ marginLeft: 6 }}

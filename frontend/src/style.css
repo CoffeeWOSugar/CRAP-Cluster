@@ -62,12 +62,6 @@ p {
 .popup {
   height: 200px;
   width: 300px;
-  /* width: 100vw; */
-  /* height: 100vh; */
-
-  /* display: flex;
-  align-items: center !important;
-  justify-content: center!; */
 
   z-index: 9999;
 }

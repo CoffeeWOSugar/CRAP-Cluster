@@ -35,7 +35,6 @@ ipcMain.on('close-window', () => {
 
 // connect and save client connection.
 let sshClient = null;
-let currentHost = null;
 
 ipcMain.handle('connect-ssh', async (event, { host, privateKeyPath, username }) => {
   return new Promise((resolve, reject) => {
@@ -45,7 +44,6 @@ ipcMain.handle('connect-ssh', async (event, { host, privateKeyPath, username }) 
     }
 
     sshClient = new Client();
-    currentHost = host;
     sshClient
       .on('ready', () => {
         console.log(`SSH Connected to ${host}`);
@@ -64,9 +62,6 @@ ipcMain.handle('connect-ssh', async (event, { host, privateKeyPath, username }) 
   });
 });
 
-ipcMain.handle('get-ssh-host', () => {
-  return currentHost || null; // return null if not connected
-});
 
 //execute command on ssh-client
 ipcMain.handle('ssh-exec', async (event, command) => {
