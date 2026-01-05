@@ -55,3 +55,31 @@ export const handleAvailableIPs = async () => {
     }
   }
 };
+
+export const handleNewNode = async (username, host, pass) => {
+  const line = `${username} ${host} ${pass}`;
+
+  const cmd = `
+  cd "$(find ~ -type d -path "*/CRAP-Cluster/config" | head -n 1)" || exit 1
+  echo "${line}" >> nodes.cnf
+  `;
+
+  await window.electronAPI.execSSH(cmd);
+  console.log("New node data:", name, pass);
+}
+
+export const handleRemoveNode = async (username, host) => {
+  const line = `${username} ${host}`;
+  try {
+
+    const cmd = `
+    cd "$(find ~ -type d -path "*/CRAP-Cluster/config" | head -n 1)" || exit 1
+    sed -i.bak "/^${line}[[:space:]]/d" nodes.cnf
+    `;
+    
+    await window.electronAPI.execSSH(cmd);
+  }
+  catch (err) {
+    console.error("Node not in conf file:", err);
+  }
+}

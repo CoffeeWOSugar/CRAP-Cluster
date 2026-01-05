@@ -3,15 +3,18 @@ import "98.css";
 import '../style.css';
 
 
-export default function Popup({ onDone, onClose }) {
-  const [input1, setInput1] = useState("");
-  const [input2, setInput2] = useState("");
+export default function Popup({ onDone, onClose, includePass}) {
+  const [name, setName] = useState("");
+  const [pass, setPass] = useState("");
 
-  const isDoneDisabled = !input1.trim() || !input2.trim();
+  const isDoneDisabled = !name.trim();
+  if(includePass){
+    const isDoneDisabled = !name.trim() || !pass.trim();
+  }
 
   const handleDone = () => {
     if (!isDoneDisabled) {
-      onDone({ input1, input2 });
+      onDone({ name, pass });
     }
   };
 
@@ -30,19 +33,19 @@ export default function Popup({ onDone, onClose }) {
           <label style = {{fontSize: "14px"}}>SSH name:</label>
           <input
             type="text"
-            value={input1}
-            onChange={(e) => setInput1(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
-        <div className="field-row-stacked" style={{ marginTop: 8 }}>
+        {includePass && (<div className="field-row-stacked" style={{ marginTop: 8 }}>
           <label style = {{fontSize: "14px"}}>Password:</label>
           <input
-            type="text"
-            value={input2}
-            onChange={(e) => setInput2(e.target.value)}
+            type="password"
+            value={pass}
+            onChange={(e) => setPass(e.target.value)}
           />
-        </div>
+        </div>)}
 
         <div
           className="field-row"

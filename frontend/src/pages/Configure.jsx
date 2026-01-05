@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "98.css";
 import '../style.css';
-import { handleAvailableIPs } from '../features/server';
+import { handleAvailableIPs, handleNewNode, handleRemoveNode} from '../features/server';
 import Popup from '../components/inputPopup';
 
 const Configure = () => {
@@ -9,7 +9,8 @@ const Configure = () => {
   const [ips, setIps] = useState([]);
   const [connectedIps, setConnectedIps] = useState([]);
   const [currentHost, setCurrentHost] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [showRemovePopup, setShowRemovePopup] = useState(false);
 
   useEffect(() => {
     const fetchIPs = async () => {
@@ -30,16 +31,58 @@ const Configure = () => {
     fetchIPs();
   }, []);
 
+  const handleAddPopupDone = async (data) => {
+    let name = data.name;
+    let username = 'villiam';
+    let host = name;
+
+    if (name.includes('@')) {
+      const [u, h] = name.split('@');
+      username = u || username;
+      host = h || host;
+    }
+
+    setIps(prev => [...prev, host]);
+    await handleNewNode(username, host, data.pass);
+    setShowAddPopup(false);
+  };
+
+  const handleRemovePopupDone = async (data) => {
+    let name = data.name;
+    console.log("Removing node:", name);
+    let username = 'villiam';
+    let host = name;
+    if (name.includes('@')) {
+      const [u, h] = name.split('@');
+      username = u || username;
+      host = h || host;
+    }
+    setIps(prev => prev.filter(ip => ip !== host));
+    connectedIps.includes(host) && setConnectedIps(prev => prev.filter(ip => ip !== host));
+    await handleRemoveNode(username, host);
+    setShowRemovePopup(false);
+
+ };
+
+
 
   return (
     <>
-      {showPopup && (
-        <div className = 'modul-overlay'>
+      {showAddPopup && (
+        <div className ='modul-overlay'>
             <Popup
-              onClose={() => setShowPopup(false)}
-              onDone={async (data) => {
-                setShowPopup(false);
-              }}
+              includePass = {true}
+              onClose={() => setShowAddPopup(false)}
+              onDone={handleAddPopupDone}
+            />
+        </div>
+      )}
+      {showRemovePopup && (
+        <div className ='modul-overlay'>
+            <Popup
+              includePass = {false}
+              onClose={() => setShowRemovePopup(false)}
+              onDone={handleRemovePopupDone}
             />
         </div>
       )}
@@ -85,10 +128,11 @@ const Configure = () => {
             </table>
           </div>
           <div className="field-row">
-            <button className='basic-button' onClick={() => setShowPopup(true)}>Add node</button>
+            <button className='basic-button' onClick={() => setShowAddPopup(true)}>Add node</button>
+            <button className='basic-button' onClick={() => setShowRemovePopup(true)}>Remove Node</button>
             <button className='basic-button'>Connect</button>
           </div>
-
+                
 
         </div>
       </div>
