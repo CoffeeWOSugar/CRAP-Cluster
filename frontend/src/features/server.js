@@ -72,11 +72,38 @@ export const handleRemoveNode = async (username, host) => {
   const line = `${username} ${host}`;
   try {
 
-    const cmd = `
-    cd "$(find ~ -type d -path "*/CRAP-Cluster/config" | head -n 1)" || exit 1
-    sed -i.bak "/^${line}[[:space:]]/d" nodes.cnf
+   const cmd = `
+      # Find the line in nodes.cnf
+      cd "$(find ~ -type d -path "*/CRAP-Cluster/config" | head -n 1)" || exit 1
+      node_line=$(grep -E "^[[:space:]]*${username}[[:space:]]+${host}[[:space:]]+" nodes.cnf || true)
+
+      if [ -z "$node_line" ]; then
+        echo "Node not found in nodes.cnf"
+        exit 1
+      fi
+
+      # Extract SSH user, host IP, and password
+      read user host_ip pass <<< "$node_line"
+
+      # SSH into worker and leave swarm
+      sshpass -p "$pass" ssh -o StrictHostKeyChecking=no "$user@$host_ip" '
+        echo "'"$pass"'" | sudo -S docker swarm leave
+      '
+
+      # Find the Swarm node name by IP and remove it from manager
+      for node in $(docker node ls -q); do
+        ip=$(docker node inspect "$node" --format '{{ .Status.Addr }}')
+        if [ "$ip" = "$host_ip" ]; then
+          echo "Removing Swarm node $node with IP $ip"
+          docker node rm --force "$node" || true
+          break
+        fi
+      done
+
+      # Remove the node from nodes.cnf
+      sed -i.bak "/^${username}[[:space:]]\\+${host}[[:space:]]/d" nodes.cnf
     `;
-    
+
     await window.electronAPI.execSSH(cmd);
   }
   catch (err) {
