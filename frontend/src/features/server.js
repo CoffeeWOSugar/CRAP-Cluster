@@ -115,6 +115,7 @@ export const handleConnectNodes = async () => {
   try {
   const cmd = `
       cd "$(find ~ -type d -path "*/CRAP-Cluster" | head -n 1)" || exit 1
+      ./crap.sh cluster-up
       ./crap.sh swarm-init
   `
     await window.electronAPI.execSSH(cmd);
