@@ -5,25 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import '../style.css';
 import AasciArt from '../components/AasciArt';
 import {handleConnect} from '../features/server';
+import useAnimatedDots from '../components/loadingAnimation';
 
 const Home = () => {
   const navigate = useNavigate();
   const [isConnected, setIsConnected] = useState(false); // track SSH status
   const [isConnecting, setIsConnecting] = useState(false); // optional: track loading
   const [resultMsg, setResultMsg] = useState("")
-  const [dots, setDots] = useState("")
-
-
-  useEffect(() => {
-    if (!isConnecting) {
-      setDots(""); // reset when not connecting
-      return;
-    }
-    const interval = setInterval(() => {
-      setDots(prev => (prev.length < 3 ? prev + "." : ""));
-    }, 500); // change every 500ms
-    return () => clearInterval(interval); // cleanup
-  }, [isConnecting]);
+  const dots = useAnimatedDots(isConnecting);
 
  const handleConnectClick = async () => {
   setIsConnecting(true);

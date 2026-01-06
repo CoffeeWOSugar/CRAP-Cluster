@@ -1,20 +1,33 @@
 import React, { useState } from "react";
 import "98.css";
 import '../style.css';
+import useAnimatedDots from "./loadingAnimation";
+import { isValidSSH } from "../features/validators";
 
 
 export default function Popup({ onDone, onClose, includePass}) {
   const [name, setName] = useState("");
   const [pass, setPass] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false);
+  const dots = useAnimatedDots(isConnecting);
+  const [error, setError] = useState(null);
 
-  const isDoneDisabled = !name.trim();
-  if(includePass){
-    const isDoneDisabled = !name.trim() || !pass.trim();
-  }
+  const isDoneDisabled = includePass
+    ? !name.trim() || !pass.trim()
+    : !name.trim();
 
-  const handleDone = () => {
-    if (!isDoneDisabled) {
-      onDone({ name, pass });
+  const handleDone = async () => {
+    if (isDoneDisabled) return;
+    if(!isValidSSH(name)) {
+      setError("Invalid SSH format.");
+      return;
+    }
+    setError(null);
+    setIsConnecting(true);
+    try {
+      await onDone({ name, pass });
+    } finally {
+      setIsConnecting(false);
     }
   };
 
@@ -36,6 +49,11 @@ export default function Popup({ onDone, onClose, includePass}) {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+          { name && error && (
+            <span style={{ color: "red", fontSize: 12 }}>
+              {error}
+            </span>
+          )}
         </div>
 
         {includePass && (<div className="field-row-stacked" style={{ marginTop: 8 }}>
@@ -57,10 +75,11 @@ export default function Popup({ onDone, onClose, includePass}) {
           <button
             className = "basic-button"
             onClick={handleDone}
-            disabled={isDoneDisabled}
+            disabled={isDoneDisabled || isConnecting}
             style={{ marginLeft: 6 }}
           >
-            Done
+              {isConnecting ? `Done${dots}` : 'Done'}
+            
           </button>
         </div>
       </div>

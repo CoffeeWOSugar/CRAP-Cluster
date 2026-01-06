@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import "98.css";
 import '../style.css';
 import { handleAvailableIPs, handleNewNode, handleRemoveNode, handleConnectNodes} from '../features/server';
+import useAnimatedDots from '../components/loadingAnimation';
 import Popup from '../components/inputPopup';
 
 const Configure = () => {
@@ -12,36 +13,27 @@ const Configure = () => {
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [showRemovePopup, setShowRemovePopup] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false); // optional: track loading
-  const [dots, setDots] = useState("")
 
-  useEffect(() => {
-    if (!isConnecting) {
-      setDots(""); // reset when not connecting
-      return;
-    }
-    const interval = setInterval(() => {
-      setDots(prev => (prev.length < 3 ? prev + "." : ""));
-    }, 500); // change every 500ms
-    return () => clearInterval(interval); // cleanup
-  }, [isConnecting]);
+  const dots = useAnimatedDots(isConnecting);
+
   
 
+  const fetchIPs = async () => {
+    try {
+      const { ips: allIps, connectedIps: connected, currentHost: host } = await handleAvailableIPs();
+      setIps(allIps);
+      setConnectedIps(connected);
+      setCurrentHost(host);
+
+      console.log('All IPs:', allIps);
+      console.log('Connected IPs:', connected);
+      console.log('Current SSH host:', host);
+    } catch (err) {
+      console.error("Failed to load IPs:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchIPs = async () => {
-      try {
-        const { ips: allIps, connectedIps: connected, currentHost: host } = await handleAvailableIPs();
-        setIps(allIps);
-        setConnectedIps(connected);
-        setCurrentHost(host);
-
-        console.log('All IPs:', allIps);
-        console.log('Connected IPs:', connected);
-        console.log('Current SSH host:', host);
-      } catch (err) {
-        console.error("Failed to load IPs:", err);
-      }
-    };
-
     fetchIPs();
   }, []);
 
@@ -80,6 +72,7 @@ const Configure = () => {
   const handleConnectClick = async () => {
     setIsConnecting(true);
     await handleConnectNodes();
+    await fetchIPs();
     setIsConnecting(false);
   };
 
