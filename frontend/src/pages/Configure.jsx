@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "98.css";
 import '../style.css';
-import { handleAvailableIPs, handleNewNode, handleRemoveNode} from '../features/server';
+import { handleAvailableIPs, handleNewNode, handleRemoveNode, handleConnectNodes} from '../features/server';
 import Popup from '../components/inputPopup';
 
 const Configure = () => {
@@ -11,6 +11,20 @@ const Configure = () => {
   const [currentHost, setCurrentHost] = useState(null);
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [showRemovePopup, setShowRemovePopup] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false); // optional: track loading
+  const [dots, setDots] = useState("")
+
+  useEffect(() => {
+    if (!isConnecting) {
+      setDots(""); // reset when not connecting
+      return;
+    }
+    const interval = setInterval(() => {
+      setDots(prev => (prev.length < 3 ? prev + "." : ""));
+    }, 500); // change every 500ms
+    return () => clearInterval(interval); // cleanup
+  }, [isConnecting]);
+  
 
   useEffect(() => {
     const fetchIPs = async () => {
@@ -61,10 +75,13 @@ const Configure = () => {
     connectedIps.includes(host) && setConnectedIps(prev => prev.filter(ip => ip !== host));
     await handleRemoveNode(username, host);
     setShowRemovePopup(false);
-
  };
 
-
+  const handleConnectClick = async () => {
+    setIsConnecting(true);
+    await handleConnectNodes();
+    setIsConnecting(false);
+  };
 
   return (
     <>
@@ -130,7 +147,12 @@ const Configure = () => {
           <div className="field-row">
             <button className='basic-button' onClick={() => setShowAddPopup(true)}>Add node</button>
             <button className='basic-button' onClick={() => setShowRemovePopup(true)}>Remove Node</button>
-            <button className='basic-button'>Connect</button>
+            <button className='basic-button'
+            onClick={handleConnectClick}
+            disabled={isConnecting}
+            >
+              {isConnecting ? `Connecting${dots}` : 'Connect'}
+            </button>
           </div>
                 
 

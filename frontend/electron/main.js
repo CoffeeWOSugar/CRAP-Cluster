@@ -77,7 +77,13 @@ ipcMain.handle('ssh-exec', async (event, command) => {
       if (err) return reject(err.message);
 
       stream.on('data', data => {
-        output += data.toString();
+        const text = data.toString();
+        console.log('[SSH STDOUT]', text);
+        output += text;
+      });
+
+      stream.stderr.on('data', data => {
+        console.error('[SSH STDERR]', data.toString());
       });
 
       stream.on('close', () => {

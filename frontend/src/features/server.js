@@ -110,3 +110,16 @@ export const handleRemoveNode = async (username, host) => {
     console.error("Node not in conf file:", err);
   }
 }
+
+export const handleConnectNodes = async () => {
+  try {
+  const cmd = `
+      cd "$(find ~ -type d -path "*/CRAP-Cluster" | head -n 1)" || exit 1
+      ./crap.sh swarm-init
+  `
+    await window.electronAPI.execSSH(cmd);
+  } catch (err) {
+    console.error("Failed to connect nodes:", err);
+  }
+}
+
