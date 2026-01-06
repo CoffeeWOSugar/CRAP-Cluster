@@ -4,9 +4,11 @@ import '../style.css';
 import { handleAvailableIPs, handleNewNode, handleRemoveNode, handleConnectNodes} from '../features/server';
 import useAnimatedDots from '../components/loadingAnimation';
 import Popup from '../components/inputPopup';
+import { useNavigate } from 'react-router-dom';
+
 
 const Configure = () => {
-
+  const navigate = useNavigate();
   const [ips, setIps] = useState([]);
   const [connectedIps, setConnectedIps] = useState([]);
   const [currentHost, setCurrentHost] = useState(null);
@@ -85,7 +87,7 @@ const Configure = () => {
       <div className='window'>
         <div className='title-bar'>
           <div className="title-bar-text">CRAP</div>
-          <div className='title-bar-text'>Home</div>
+          <div className='title-bar-text'>Configure</div>
           <div className="title-bar-controls">
             <button aria-label="Close" onClick={() => window.electronAPI.close()} />
           </div>
@@ -134,8 +136,22 @@ const Configure = () => {
               {isConnecting ? `Connecting${dots}` : 'Connect'}
             </button>
           </div>
-                
-
+          <div className="field-row" style={{width: "auto", height: "15%"}}>
+            <button 
+              className='basic-button'
+              style={{marginright: "auto", marginTop: "auto"}}
+              onClick={() => navigate('/')} 
+              >
+                Back
+            </button>
+            <button 
+              className='basic-button'
+              style={{marginLeft: "auto", marginTop: "auto"}}
+              onClick={() => navigate('/schedule')} 
+              >
+                Next
+            </button>
+          </div>
         </div>
       </div>
     </>
