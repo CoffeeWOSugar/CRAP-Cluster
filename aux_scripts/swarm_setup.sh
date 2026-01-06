@@ -15,8 +15,8 @@ if [[ "$(which docker | wc -l)" -eq "0" ]]; then
 fi
 
 # Docker swarm init on manager
-sudo docker swarm leave --force
-swarm_init_output=$(sudo docker swarm init --advertise-addr "$MANAGER_IP")
+docker swarm leave --force
+swarm_init_output=$(docker swarm init --advertise-addr "$MANAGER_IP")
 echo "$swarm_init_output"
 join_command=$(printf "%s\n" "$swarm_init_output" | grep "docker swarm join")
 
@@ -36,4 +36,4 @@ while read -r user ip pass; do
 done < <(
   grep -vE '^\s*#|^\s*$' $CONF_DIR/nodes.cnf | tail -n +2
 )
-sudo docker node ls
+docker node ls
