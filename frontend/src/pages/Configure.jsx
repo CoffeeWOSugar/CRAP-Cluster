@@ -48,8 +48,9 @@ const Configure = () => {
       host = h || host;
     }
 
-    setIps(prev => [...prev, host]);
+    // setIps(prev => [...prev, host]);
     await handleNewNode(username, host, data.pass);
+    await fetchIPs();
     setShowAddPopup(false);
   };
 
@@ -63,9 +64,10 @@ const Configure = () => {
       username = u || username;
       host = h || host;
     }
-    setIps(prev => prev.filter(ip => ip !== host));
-    connectedIps.includes(host) && setConnectedIps(prev => prev.filter(ip => ip !== host));
+    // setIps(prev => prev.filter(ip => ip !== host));
+    // connectedIps.includes(host) && setConnectedIps(prev => prev.filter(ip => ip !== host));
     await handleRemoveNode(username, host);
+    await fetchIPs();
     setShowRemovePopup(false);
  };
 
