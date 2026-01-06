@@ -6,6 +6,7 @@ import '../style.css';
 import AasciArt from '../components/AasciArt';
 import {handleConnect} from '../features/server';
 import useAnimatedDots from '../components/loadingAnimation';
+import { isValidSSH } from '../features/validators';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -25,6 +26,13 @@ const Home = () => {
     return;
   }
   const input = inputEl.value;
+  if (isValidSSH(input) === false) {
+    console.log("Connecting to:", input);
+    setResultMsg("Invalid SSH format.");
+    setIsConnected(false);
+    setIsConnecting(false);
+    return;
+  }
 
   try {
     const result = await handleConnect(input); // pass input explicitly
