@@ -25,9 +25,6 @@ const Configure = () => {
       setConnectedIps(connected);
       setCurrentHost(host);
 
-      console.log('All IPs:', allIps);
-      console.log('Connected IPs:', connected);
-      console.log('Current SSH host:', host);
     } catch (err) {
       console.error("Failed to load IPs:", err);
     }
@@ -38,35 +35,18 @@ const Configure = () => {
   }, []);
 
   const handleAddPopupDone = async (data) => {
-    let name = data.name;
-    let username = 'villiam';
-    let host = name;
-
-    if (name.includes('@')) {
-      const [u, h] = name.split('@');
-      username = u || username;
-      host = h || host;
-    }
 
     // setIps(prev => [...prev, host]);
-    await handleNewNode(username, host, data.pass);
+    await handleNewNode(data.username, data.host, data.pass);
     await fetchIPs();
     setShowAddPopup(false);
   };
 
   const handleRemovePopupDone = async (data) => {
-    let name = data.name;
-    console.log("Removing node:", name);
-    let username = 'villiam';
-    let host = name;
-    if (name.includes('@')) {
-      const [u, h] = name.split('@');
-      username = u || username;
-      host = h || host;
-    }
+
     // setIps(prev => prev.filter(ip => ip !== host));
     // connectedIps.includes(host) && setConnectedIps(prev => prev.filter(ip => ip !== host));
-    await handleRemoveNode(username, host);
+    await handleRemoveNode(data.username, data.host);
     await fetchIPs();
     setShowRemovePopup(false);
  };
@@ -86,6 +66,8 @@ const Configure = () => {
               includePass = {true}
               onClose={() => setShowAddPopup(false)}
               onDone={handleAddPopupDone}
+              ips = {ips}
+              manager = {currentHost}
             />
         </div>
       )}
@@ -95,6 +77,8 @@ const Configure = () => {
               includePass = {false}
               onClose={() => setShowRemovePopup(false)}
               onDone={handleRemovePopupDone}
+              ips = {ips}
+              manager = {currentHost}
             />
         </div>
       )}
@@ -139,11 +123,12 @@ const Configure = () => {
               </tbody>
             </table>
           </div>
-          <div className="field-row">
+          <div className="field-row" style={{width: "400px"}}>
             <button className='basic-button' onClick={() => setShowAddPopup(true)}>Add node</button>
             <button className='basic-button' onClick={() => setShowRemovePopup(true)}>Remove Node</button>
             <button className='basic-button'
             onClick={handleConnectClick}
+            style={{ marginLeft: "auto" }}
             disabled={isConnecting}
             >
               {isConnecting ? `Connecting${dots}` : 'Connect'}

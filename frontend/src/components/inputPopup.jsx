@@ -5,7 +5,7 @@ import useAnimatedDots from "./loadingAnimation";
 import { isValidSSH } from "../features/validators";
 
 
-export default function Popup({ onDone, onClose, includePass}) {
+export default function Popup({ onDone, onClose, includePass, ips, manager}) {
   const [name, setName] = useState("");
   const [pass, setPass] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
@@ -22,10 +22,33 @@ export default function Popup({ onDone, onClose, includePass}) {
       setError("Invalid SSH format.");
       return;
     }
+
+    let username = 'villiam';
+    let host = name;
+
+    if (name.includes('@')) {
+      const [u, h] = name.split('@');
+      username = u || username;
+      host = h || host;
+    }
+
+    if(ips && ips.includes(host) && includePass) {
+      setError("Node already exists.");
+      return;
+    }
+
+    if(ips && !ips.includes(host) && !includePass) {
+      setError("Can't remove non-existing node.");
+      return;
+    }
+    if(ips && host === manager && !includePass) {
+      setError("Can't remove manager node.");
+      return;
+    }
     setError(null);
     setIsConnecting(true);
     try {
-      await onDone({ name, pass });
+      await onDone({ username, host, pass });
     } finally {
       setIsConnecting(false);
     }
@@ -47,7 +70,11 @@ export default function Popup({ onDone, onClose, includePass}) {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+                setName(e.target.value);
+                setError(null);
+              }
+            }
           />
           { name && error && (
             <span style={{ color: "red", fontSize: 12 }}>
