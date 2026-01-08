@@ -15,7 +15,7 @@ docker build -t $registry/$jobname .
 docker push $registry/$jobname
 
 # deploy stack
-docker stack deploy --compose-file test.yaml $jobname
+docker stack deploy --compose-file compose.yaml $jobname
 
 # check if running
 docker stack services $jobname
