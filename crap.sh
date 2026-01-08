@@ -47,9 +47,11 @@ cluster-up() {
   $SCRIPT_FOLDER/cluster_setup.sh
 }
 
+# initialize swarm and registry
 swarm-init() {
   setup_ssh
   $SCRIPT_FOLDER/swarm_setup.sh
+  $SCRIPT_FOLDER/registry_setup.sh
 }
 
 # Power down cluster
