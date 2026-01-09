@@ -11,3 +11,4 @@ hosts
 
 # Benchmarks
 example_programs/IntelMPIBenchmarks
+example_programs/NPB
