@@ -96,7 +96,7 @@ const Configure = () => {
         <div className="window-body" style={{ textAlign: "left" }}>
 
           <h2>Configuration</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id sapien condimentum, blandit velit in, luctus magna. Vivamus at sapien eu ante ullamcorper finibus. Praesent finibus arcu elit, ac condimentum massa interdum in. Ut porttitor augue nunc, vehicula finibus purus auctor eget. Proin convallis tincidunt sem vel accumsan. Suspendisse suscipit urna quam, at efficitur erat mollis sit amet.</p>
+          <p>View the nodes of the cluster in the table below. If necessary, configure your cluster by adding, removing or connecting nodes to the cluster </p>
           <div className="field-row-stacked" style={{ width: "400px", height: "150px", background: "white" }}>
             <table className="interactive" >
               <thead style={{ fontSize: "14px" }}>
@@ -146,7 +146,8 @@ const Configure = () => {
             </button>
             <button 
               className='basic-button'
-              style={{marginLeft: "auto", marginTop: "auto"}}
+              // style={{marginLeft: "auto", marginTop: "auto"}}
+              style={{marginTop: "auto"}}
               onClick={() => navigate('/schedule')} 
               >
                 Next

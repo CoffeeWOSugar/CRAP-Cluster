@@ -16,6 +16,26 @@ p {
   font-size: 16px;
 }
 
+label {
+  font-size: 14px;
+}
+
+legend {
+  font-size: 14px;
+}
+
+select {
+  font-size: 14px;
+}
+
+option {
+  font-size: 14px;
+}
+
+input {
+  font-size: 14px;
+}
+
 .basic-button {
   /* width: 95px; */
   height: 27.6px;
