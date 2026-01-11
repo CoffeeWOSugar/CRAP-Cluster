@@ -113,7 +113,7 @@ submit-job() {
 
 job-wait() {
   setup_ssh >/dev/null 2<&1
-  $SCRIPT_FOLDER/status.sh "$@"
+  $SCRIPT_FOLDER/wait-for-job.sh "$@"
 }
 
 ###################
