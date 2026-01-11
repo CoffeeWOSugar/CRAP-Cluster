@@ -2,17 +2,61 @@
 set -euo pipefail
 # Schedule a job on the cluster
 
-# args
-JOBID="job-$(cat ../config/job_id)"
-echo $((${JOBID#job-} + 1)) >../config/job_id
-folder=$1
-shift
-# vars
-outdir=$(realpath $(dirname $0))
+#----- Instructions
+# ./schedule.sh FOLDER labels
+# ./schedule.sh jobs/DocherStackDemo gpu=true mem=small
+
+# ----- VARIABLES
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+JOBID="job-$(cat $REPO_ROOT/config/job_id)"
+outdir=$(realpath $(dirname $0)) # CHANGE TO REPO_ROOT/output
 REG=192.168.10.1:5000
 TAG=$(date +%Y%m%d-%H%M%S)
 IMAGE=$JOBID
 PLACEMENT_BLOCK=""
+COMPOSEFILE=$REPO_ROOT/config/compose.yaml.in # Template compose-file
+
+# ---- FUNCTIONS
+
+usage() {
+  echo ""
+  echo "--- SCHEDULE JOB ---"
+  echo ""
+  echo "Schedule a job on the cluster"
+  echo "Job folder should contain following:"
+  echo "  - Executable"
+  echo "  - Dockerfile"
+  echo "  - requirements.txt"
+  echo "  - compose.yaml (optional)"
+  echo ""
+  echo "Usage: "
+  echo "  schedule /path/to/job/folder options"
+  echo ""
+  echo "Options: "
+  echo "  - gpu=true"
+  echo "  - cpu=small/medium/large/xlarge"
+  echo "  - mem=small/medium/large/xlarge"
+  echo ""
+  echo "Example:"
+  echo "  schedule jobs/DockerStackDemo mem=small gpu=true"
+  echo ""
+}
+
+# ----- SCRIPT
+
+# help message
+if [[ "$#" == 0 || "$1" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+# ----- ARGUMENTS
+FOLDER=$1
+shift
+
+# Increment JOBID
+echo $((${JOBID#job-} + 1)) >$REPO_ROOT/config/job_id
+
 # Validate labels
 for arg in "$@"; do
   key=${arg%%=*}
@@ -41,10 +85,10 @@ export PLACEMENT_BLOCK
 export IMAGE
 export REG
 export PROFILE
-envsubst <compose.yaml.in >$folder/compose.yaml
+envsubst <$COMPOSEFILE >$FOLDER/compose.yaml
 
 # Create image
-cd $folder
+cd $FOLDER
 
 docker build -t ${IMAGE}:${TAG} .
 docker tag ${IMAGE}:${TAG} ${REG}/${IMAGE}:${TAG}
@@ -58,20 +102,4 @@ docker stack deploy --compose-file compose.yaml $JOBID
 
 # check if running
 docker stack services $JOBID
-
-# wait to complete
-while true; do
-  state=$(docker stack ps $JOBID --format '{{.CurrentState}}' | head -n1)
-  echo "$state"
-  [[ "$state" == *"Complete"* ]] && break
-  sleep 5
-done
-
-# redirect output
-#docker service logs ${JOBID}_app >~/src/CRAP-Cluster.ebba/${jobname}.out 2>&1
-for s in $(docker stack services $JOBID --format '{{.Name}}'); do
-  docker service logs "$s" >"$outdir/$s.out" 2>&1
-done
-
-# cleanup
-docker stack rm $JOBID
+echo "JOBID: $JOBID"

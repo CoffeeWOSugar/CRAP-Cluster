@@ -1,8 +1,22 @@
 #!/bin/bash
-#!/bin/bash
+
 set -euo pipefail
 
-CONF_DIR=../config
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+CONF_DIR=$REPO_ROOT/config
+
+usage() {
+  echo "--- AUTO LABEL ---"
+  echo "Label nodes based on hardware"
+  echo "Labels: "
+  echo "  gpu: true/false"
+  echo "  cpu: small/medium/large/xlarge"
+  echo "  mem: small/medium/large/xlarge"
+  echo ""
+  echo "options:"
+  echo "  -h  show this help message"
+  echo ""
+}
 
 cpu_class() {
   local n=$1
@@ -29,6 +43,11 @@ mem_class() {
     echo xlarge
   fi
 }
+
+if [[ "$#" != 0 ]]; then
+  usage
+  exit 0
+fi
 
 while read -r user ip pass; do
   ssh_target="$user@$ip"

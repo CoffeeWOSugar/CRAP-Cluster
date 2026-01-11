@@ -29,6 +29,10 @@ usage() {
   echo "	cluster-down  Shutdown cluster and power off machines"
   echo "	swarm-init    Initialize swarm"
   echo "	swarm-down    Shutdown and leave swarm"
+  echo "	label-nodes   Label nodes in cluster automaticcaly"
+  echo "	show-labels   Show labels for all nodes in cluster"
+  echo "	submit-job    Submit-job to cluster, -h for more info"
+  echo "	job-wait      Wait for job to finish and cleanup, -h for more info"
   exit 1
 }
 
@@ -56,7 +60,7 @@ swarm-init() {
 
 # Power down cluster
 cluster-down() {
-  setup-ssh
+  setup_ssh
   echo "Shutting down cluster and powering off machines"
 
   while read -r user ip pass; do
@@ -70,7 +74,7 @@ cluster-down() {
 }
 
 swarm-down() {
-  setup-ssh
+  setup_ssh
   echo "Leaving swarm"
 
   while read -r user ip pass; do
@@ -85,34 +89,115 @@ swarm-down() {
   sudo docker swarm leave --force
 }
 
-###################
-while [ "$1" != "" ]; do
-  PARAM=$(echo "$1" | awk -F= '{print $1}')
-  VALUE=$(echo "$1" | awk -F= '{print $2}')
+# ---- label-nodes automaticcaly
+# Labels:
+# gpu: true/false
+# cpu: small/medium/large/xlarge
+# mem: small/medium/large/xlarge
+label-nodes() {
+  setup_ssh
+  echo "Labeling nodes"
+  $SCRIPT_FOLDER/auto_label.sh
+}
 
-  case $PARAM in
-  help)
-    crap
-    usage
-    exit
-    ;;
-  cluster-up)
-    cluster-up
-    ;;
-  swarm-init)
-    swarm-init
-    ;;
-  swarm-down)
-    swarm-down
-    ;;
-  cluster-down) #Should it be called shutdown?
-    cluster-down
-    ;;
-  *)
-    crap
-    usage
-    exit
-    ;;
-  esac
-  shift
-done
+show-labels() {
+  setup_ssh >/dev/null 2>&1
+  echo "Node labels"
+  $SCRIPT_FOLDER/list_labels.sh
+}
+
+submit-job() {
+  setup_ssh >/dev/null 2<&1
+  $SCRIPT_FOLDER/schedule.sh "$@"
+}
+
+job-wait() {
+  setup_ssh >/dev/null 2<&1
+  $SCRIPT_FOLDER/status.sh "$@"
+}
+
+###################
+if [[ $# -eq 0 ]]; then
+  crap
+  usage
+  exit 1
+fi
+
+COMMAND=${1:-help}
+shift || true
+
+case $COMMAND in
+help | -h | --help)
+  crap
+  usage
+  exit 0
+  ;;
+cluster-up)
+  cluster-up
+  ;;
+swarm-init)
+  swarm-init
+  ;;
+swarm-down)
+  swarm-down
+  ;;
+cluster-down) #Should it be called shutdown?
+  cluster-dowg
+  ;;
+label-nodes)
+  label-nodes
+  ;;
+show-labels)
+  show-labels
+  ;;
+submit-job)
+  submit-job "$@" #pass remaining arguments
+  ;;
+job-wait)       #wait for job to finish and cleanup
+  job-wait "$@" #pass remaining arguments
+  ;;
+*)
+  crap
+  usage
+  exit
+  ;;
+esac
+shift
+
+#
+#while [ "$1" != "" ]; do
+#  PARAM=$(echo "$1" | awk -F= '{print $1}')
+#  VALUE=$(echo "$1" | awk -F= '{print $2}')
+#
+#  case $PARAM in
+#  help)
+#    crap
+#    usage
+#    exit
+#    ;;
+#  cluster-up)
+#    cluster-up
+#    ;;
+#  swarm-init)
+#    swarm-init
+#    ;;
+#  swarm-down)
+#    swarm-down
+#    ;;
+#  cluster-down) #Should it be called shutdown?
+#    cluster-dowg
+#    ;;
+#  label-nodes)
+#    label-nodes
+#    ;;
+#  show-labels)
+#    show-labels
+#    ;;
+#  *)
+#    crap
+#    usage
+#    exit
+#    ;;
+#  esac
+#  shift
+#done
