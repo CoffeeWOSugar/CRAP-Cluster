@@ -4,46 +4,47 @@ import "98.css";
 import { useNavigate } from 'react-router-dom';
 import '../style.css';
 import AasciArt from '../components/AasciArt';
-import handleConnect from '../features/server';
+import {handleConnect} from '../features/server';
+import useAnimatedDots from '../components/loadingAnimation';
+import { isValidSSH } from '../features/validators';
 
 const Home = () => {
   const navigate = useNavigate();
   const [isConnected, setIsConnected] = useState(false); // track SSH status
   const [isConnecting, setIsConnecting] = useState(false); // optional: track loading
   const [resultMsg, setResultMsg] = useState("")
-  const [dots, setDots] = useState("")
+  const dots = useAnimatedDots(isConnecting);
 
+ const handleConnectClick = async () => {
+  setIsConnecting(true);
+  setIsConnected(null);        
+  setResultMsg("");
+  const inputEl = document.getElementById('textHost');
+  if (!inputEl) {
+    setResultMsg("Hostname input not found!");
+    setIsConnecting(false);
+    return;
+  }
+  const input = inputEl.value;
+  if (isValidSSH(input) === false) {
+    console.log("Connecting to:", input);
+    setResultMsg("Invalid SSH format.");
+    setIsConnected(false);
+    setIsConnecting(false);
+    return;
+  }
 
-  useEffect(() => {
-    if (!isConnecting) {
-      setDots(""); // reset when not connecting
-      return;
-    }
-    const interval = setInterval(() => {
-      setDots(prev => (prev.length < 3 ? prev + "." : ""));
-    }, 500); // change every 500ms
-    return () => clearInterval(interval); // cleanup
-  }, [isConnecting]);
-
-  const handleConnectClick = async () => {
-    setIsConnecting(true);
-    setIsConnected(null);        
-    setResultMsg("");
-    try {
-      const result = await handleConnect(); // call your existing SSH function
-      setIsConnected(true); // mark connection as successful
-      setResultMsg("Connection successful!");
-    } catch (err) {
-      setIsConnected(false);
-      // setResultMsg('Connection failed: ' + err)
-      setResultMsg('Connection failed!')
-      // alert('Connection failed: ' + err);
-
-    } finally {
-      setIsConnecting(false);
-
-    }
-  };
+  try {
+    const result = await handleConnect(input); // pass input explicitly
+    setIsConnected(true);
+    setResultMsg("Connection successful!");
+  } catch (err) {
+    setIsConnected(false);
+    setResultMsg("Connection failed!");
+  } finally {
+    setIsConnecting(false);
+  }
+};
 
   return (
     <div className='window'>

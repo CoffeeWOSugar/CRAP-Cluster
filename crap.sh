@@ -33,10 +33,11 @@ usage() {
   echo "	show-labels   Show labels for all nodes in cluster"
   echo "	submit-job    Submit-job to cluster, -h for more info"
   echo "	job-wait      Wait for job to finish and cleanup, -h for more info"
+  echo "	schedule      Schedule jobs (see './crap.sh schedule help' for usage)"
   exit 1
 }
 
-setup_ssh() {
+setup-ssh() {
   if [ -n "$SSH_AGENT_PID" ] && ps -p "$SSH_AGENT_PID" >/dev/null 2>&1; then
     echo "ssh-agent is already running and has keys loaded."
   else
@@ -55,6 +56,10 @@ cluster-up() {
 swarm-init() {
   setup_ssh
   $SCRIPT_FOLDER/swarm_setup.sh
+  $SCRIPT_FOLDER/registry_setup.sh
+}
+
+registry-init() {
   $SCRIPT_FOLDER/registry_setup.sh
 }
 
@@ -116,6 +121,111 @@ job-wait() {
   $SCRIPT_FOLDER/wait-for-job.sh "$@"
 }
 
+schedule() {
+  # Add all cron variables to args
+  args=()
+  TIMEOUT=""
+  MODE=""
+  CRON_ARGS=()
+  PROGRAM_PATH=$SCRIPT_FOLDER/schedule.sh
+  PROGRAM_PATH=$(realpath "$PROGRAM_PATH")
+  LOG_FILE=$(realpath "cron.log")
+  echo "$PROGRAM_PATH"
+  # shift
+
+  if [[ "$1" == "help" || $# -lt 1 ]]; then
+    echo "Usage: ./crap.sh schedule <program_path> [options]"
+    echo
+    echo "Options:"
+    echo "    -timeout DURATION		  Terminate program after some time"
+    echo "    -time [HH:MM] [day]           Schedule a one-time job"
+    echo "    -repeat MIN HOUR DOM MON DOW  Schedule a repeating job (cron syntax)"
+    echo
+    echo "List all jobs using crontab -l and atq"
+    echo "Remove jobs using crontab -r and atrm [job_id]"
+    echo
+    echo "Example:"
+    echo "    ./crap.sh schedule example_programs/HelloWorldMPIStack/build_deploy.sh -timeout 1h -time 22:00 today"
+    echo "    ./crap.sh schedule example_programs/HelloWorldMPIStack/build_deploy.sh -timeout 10m -repeat 0 22"
+    echo
+    echo "Note: -timeout must appear before -time and -repeat"
+    exit 0
+  fi
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+    -timeout)
+      shift
+      TIMEOUT="$1"
+      shift
+      ;;
+
+    -time)
+      MODE="at"
+      AT_TIME="$2 $3"
+      shift 3
+      ;;
+
+    -repeat)
+      MODE="cron"
+      shift
+      while [[ $# -gt 0 && $1 != -* || CRON_ARGS -lt 5 ]]; do
+        CRON_ARGS+=("$1")
+        shift
+      done
+      ;;
+    -path)
+      shift
+      JOB_PATH="$(realpath "$1")"
+      echo $JOB_PATH
+      shift
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
+  # build  Command
+  if [[ -n "$TIMEOUT" ]]; then
+    CMD="timeout $TIMEOUT $JOB_PATH $PROGRAM_PATH $* >> $LOG_FILE 2>&1"
+  else
+    CMD="$PROGRAM_PATH $JOB_PATH $* >> $LOG_FILE 2>&1"
+  fi
+
+  echo "Scheduling $CMD"
+  # One-time job
+  if [[ "$MODE" == "at" ]]; then
+    echo "$CMD" | at "$AT_TIME"
+    echo "All queued one-time jobs:"
+    atq
+    return 0
+  fi
+
+  # Repeating job
+  if [[ "$MODE" == "cron" ]]; then
+
+    cron_line="${CRON_ARGS[0]} ${CRON_ARGS[1]} ${CRON_ARGS[2]} ${CRON_ARGS[3]} ${CRON_ARGS[4]} $CMD"
+
+    (
+      crontab -l 2>/dev/null
+      echo "$cron_line"
+      while [[ ${#CRON_ARGS[@]} -lt 5 ]]; do
+        CRON_ARGS+=("*")
+      done
+    ) | crontab -
+
+    crontab -l
+  fi
+  # Run immediately
+  if [[ -n "$MODE" ]]; then
+    submit-job "$@"
+  #JOB_PATH="$(realpath "$1")0
+  fi
+  #FIND JOBID????????
+
+}
+
 ###################
 if [[ $# -eq 0 ]]; then
   crap
@@ -156,48 +266,14 @@ submit-job)
 job-wait)       #wait for job to finish and cleanup
   job-wait "$@" #pass remaining arguments
   ;;
+schedule-job)
+  schedule "$@"
+  ;;
 *)
+  echo "Command $COMMAND does not exist"
   crap
   usage
   exit
   ;;
 esac
 shift
-
-#
-#while [ "$1" != "" ]; do
-#  PARAM=$(echo "$1" | awk -F= '{print $1}')
-#  VALUE=$(echo "$1" | awk -F= '{print $2}')
-#
-#  case $PARAM in
-#  help)
-#    crap
-#    usage
-#    exit
-#    ;;
-#  cluster-up)
-#    cluster-up
-#    ;;
-#  swarm-init)
-#    swarm-init
-#    ;;
-#  swarm-down)
-#    swarm-down
-#    ;;
-#  cluster-down) #Should it be called shutdown?
-#    cluster-dowg
-#    ;;
-#  label-nodes)
-#    label-nodes
-#    ;;
-#  show-labels)
-#    show-labels
-#    ;;
-#  *)
-#    crap
-#    usage
-#    exit
-#    ;;
-#  esac
-#  shift
-#done

@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  job:
+    image: 192.168.10.1:5000/job-14:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+
+      placement: 
+        constraints: 
+          - node.labels.gpu == false
+

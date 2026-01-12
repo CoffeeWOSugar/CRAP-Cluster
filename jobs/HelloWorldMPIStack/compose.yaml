@@ -1,0 +1,29 @@
+services:
+  master:
+    image: 192.168.10.1:5000/mpi-test:latest
+    environment:
+      - ENTRYPOINT_TYPE=root
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - net
+  worker:
+    image: 192.168.10.1:5000/mpi-test:latest
+    environment:
+      - ENTRYPOINT_TYPE=node
+    deploy:
+      replicas: 2
+      placement:
+       constraints:
+        - node.role == worker
+    networks:
+      - net
+    command: ["sleep", "infinity"]
+
+networks:
+  net:
+    driver: overlay
+    attachable: true

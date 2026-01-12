@@ -1,0 +1,417 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 147B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine
+#2 DONE 0.9s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146
+#4 resolve docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 368B done
+#5 DONE 0.0s
+
+#6 [3/4] WORKDIR /code
+#6 CACHED
+
+#7 [2/4] ADD . /code
+#7 CACHED
+
+#8 [4/4] RUN pip install -r requirements.txt
+#8 CACHED
+
+#9 exporting to image
+#9 exporting layers done
+#9 exporting manifest sha256:f7c4c38e773c89bbd9120beb4f9c3b39fed56fb75bd551d7ce1b4cb0be0f64c9 done
+#9 exporting config sha256:1b3538d5549071faa639556a1d74ff52cb8bc619326535baa038ff80f3a2ad74 done
+#9 exporting attestation manifest sha256:a30df77b3f3d8b2aabec965fe791b09fa3c596c99694308e2c33b5b86dcaa007 0.0s done
+#9 exporting manifest list sha256:c9c67f76d39cae2a037a5c43373c3aa7eab53007e2a8355f368fef07063e600d 0.0s done
+#9 naming to docker.io/library/job-9:20260112-081313
+#9 naming to docker.io/library/job-9:20260112-081313 done
+#9 unpacking to docker.io/library/job-9:20260112-081313 0.0s done
+#9 DONE 0.1s
+The push refers to repository [192.168.10.1:5000/job-9]
+b0141aefb753: Layer already exists
+4f4fb700ef54: Layer already exists
+367f84ba896d: Pushed
+fd9813930ffc: Layer already exists
+522560f13f9b: Layer already exists
+9e4742745279: Layer already exists
+1074353eec0d: Layer already exists
+a4581c766c38: Layer already exists
+20260112-081313: digest: sha256:c9c67f76d39cae2a037a5c43373c3aa7eab53007e2a8355f368fef07063e600d size: 856
+The push refers to repository [192.168.10.1:5000/job-9]
+9e4742745279: Layer already exists
+b0141aefb753: Layer already exists
+a4581c766c38: Layer already exists
+4f4fb700ef54: Layer already exists
+367f84ba896d: Already exists
+fd9813930ffc: Layer already exists
+522560f13f9b: Layer already exists
+1074353eec0d: Layer already exists
+latest: digest: sha256:c9c67f76d39cae2a037a5c43373c3aa7eab53007e2a8355f368fef07063e600d size: 856
+Since --detach=false was not specified, tasks will be created in the background.
+In a future release, --detach=false will become the default.
+Creating network job-9_default
+Creating service job-9_job
+ID             NAME        MODE         REPLICAS   IMAGE                            PORTS
+l2noelmxnuml   job-9_job   replicated   0/1        192.168.10.1:5000/job-9:latest   
+JOBID: job-9
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 147B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine
+#2 DONE 0.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146
+#4 resolve docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 369B done
+#5 DONE 0.0s
+
+#6 [2/4] ADD . /code
+#6 CACHED
+
+#7 [3/4] WORKDIR /code
+#7 CACHED
+
+#8 [4/4] RUN pip install -r requirements.txt
+#8 CACHED
+
+#9 exporting to image
+#9 exporting layers done
+#9 exporting manifest sha256:439864c5e79c72e8b15bfe72f92f032c72c8fadf50acd91e62131324431a11db done
+#9 exporting config sha256:553316d3b7bc3416dea1d09d655286132cdf260091968777d89b20153060e571 0.0s done
+#9 exporting attestation manifest sha256:2bd19b8237f2cc7522c7ada389e6c445c1c9543a5e54e0f1bad154c7be2fb8b0
+#9 exporting attestation manifest sha256:2bd19b8237f2cc7522c7ada389e6c445c1c9543a5e54e0f1bad154c7be2fb8b0 0.0s done
+#9 exporting manifest list sha256:cf17084da54d5778fb66f09505ad50e7f992201ea2181a9e22fe45ffa5faee6d 0.0s done
+#9 naming to docker.io/library/job-10:20260112-081622 done
+#9 unpacking to docker.io/library/job-10:20260112-081622 0.0s done
+#9 DONE 0.1s
+The push refers to repository [192.168.10.1:5000/job-10]
+1074353eec0d: Layer already exists
+4f4fb700ef54: Layer already exists
+a4581c766c38: Layer already exists
+855e96b9f73c: Pushed
+57723c339978: Layer already exists
+522560f13f9b: Layer already exists
+640ce3d61653: Layer already exists
+9e4742745279: Layer already exists
+20260112-081622: digest: sha256:cf17084da54d5778fb66f09505ad50e7f992201ea2181a9e22fe45ffa5faee6d size: 856
+The push refers to repository [192.168.10.1:5000/job-10]
+a4581c766c38: Layer already exists
+1074353eec0d: Layer already exists
+9e4742745279: Layer already exists
+855e96b9f73c: Already exists
+522560f13f9b: Layer already exists
+57723c339978: Layer already exists
+640ce3d61653: Layer already exists
+4f4fb700ef54: Layer already exists
+latest: digest: sha256:cf17084da54d5778fb66f09505ad50e7f992201ea2181a9e22fe45ffa5faee6d size: 856
+Since --detach=false was not specified, tasks will be created in the background.
+In a future release, --detach=false will become the default.
+Creating network job-10_default
+Creating service job-10_job
+ID             NAME         MODE         REPLICAS   IMAGE                             PORTS
+qwrt3qkfskwe   job-10_job   replicated   0/1        192.168.10.1:5000/job-10:latest   
+JOBID: job-10
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 147B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine
+#2 DONE 0.9s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146
+#4 resolve docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 369B done
+#5 DONE 0.0s
+
+#6 [3/4] WORKDIR /code
+#6 CACHED
+
+#7 [2/4] ADD . /code
+#7 CACHED
+
+#8 [4/4] RUN pip install -r requirements.txt
+#8 CACHED
+
+#9 exporting to image
+#9 exporting layers done
+#9 exporting manifest sha256:6918f65faf2723180b8adab0dc36bb768862aa489735fca4995e54ac0913ed47 done
+#9 exporting config sha256:47d307d216caba50ed0bb7e412415ce9a2b001d96f6139cd29317a218dba5d9e done
+#9 exporting attestation manifest sha256:0207bdf803c820cac2aaaea5fc20c7a9175212c37b3f53312a77acb91a92aa93 0.0s done
+#9 exporting manifest list sha256:017a4af4dc282ca944459cbef38a4ad5a832a3c05745f64b0d22c36e59482254 0.0s done
+#9 naming to docker.io/library/job-11:20260112-082325 done
+#9 unpacking to docker.io/library/job-11:20260112-082325 0.0s done
+#9 DONE 0.1s
+The push refers to repository [192.168.10.1:5000/job-11]
+4f4fb700ef54: Layer already exists
+a4581c766c38: Layer already exists
+29cb8e0454b3: Pushed
+852fc2409071: Layer already exists
+522560f13f9b: Layer already exists
+1074353eec0d: Layer already exists
+3e4b5048e8ac: Layer already exists
+9e4742745279: Layer already exists
+20260112-082325: digest: sha256:017a4af4dc282ca944459cbef38a4ad5a832a3c05745f64b0d22c36e59482254 size: 856
+The push refers to repository [192.168.10.1:5000/job-11]
+9e4742745279: Layer already exists
+29cb8e0454b3: Already exists
+852fc2409071: Layer already exists
+522560f13f9b: Layer already exists
+3e4b5048e8ac: Layer already exists
+4f4fb700ef54: Layer already exists
+1074353eec0d: Layer already exists
+a4581c766c38: Layer already exists
+latest: digest: sha256:017a4af4dc282ca944459cbef38a4ad5a832a3c05745f64b0d22c36e59482254 size: 856
+Since --detach=false was not specified, tasks will be created in the background.
+In a future release, --detach=false will become the default.
+Creating network job-11_default
+Creating service job-11_job
+ID             NAME         MODE         REPLICAS   IMAGE                             PORTS
+thpz4nz5l4f3   job-11_job   replicated   0/1        192.168.10.1:5000/job-11:latest   
+JOBID: job-11
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 147B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine
+#2 DONE 0.2s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 445B done
+#4 DONE 0.0s
+
+#5 [1/4] FROM docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146
+#5 resolve docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146 0.0s done
+#5 CACHED
+
+#6 [2/4] ADD . /code
+#6 DONE 0.0s
+
+#7 [3/4] WORKDIR /code
+#7 DONE 0.0s
+
+#8 [4/4] RUN pip install -r requirements.txt
+#8 2.399 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 2.535 
+#8 2.535 [notice] A new release of pip is available: 25.0.1 -> 25.3
+#8 2.535 [notice] To update, run: pip install --upgrade pip
+#8 DONE 2.7s
+
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 0.6s done
+#9 exporting manifest sha256:080198ea8e3de37f7f65231c9f889fec3681fe9451c342715b1ed624672fcdf0 0.0s done
+#9 exporting config sha256:1d9b07c7f07b6262209ea08b05111d5ed8f1da10f9af121eac6ca3213f984e44 0.0s done
+#9 exporting attestation manifest sha256:c6c76950c0f1be8ff63795e49f38d13be5905f96a9da63a0dfec47041def99cb 0.0s done
+#9 exporting manifest list sha256:d15d0b8cd12182e9707bb253acb40da3509dab23d496d7cce049e7b5bb2ef5eb 0.0s done
+#9 naming to docker.io/library/job-12:20260112-082333 done
+#9 unpacking to docker.io/library/job-12:20260112-082333
+#9 unpacking to docker.io/library/job-12:20260112-082333 0.2s done
+#9 DONE 1.0s
+The push refers to repository [192.168.10.1:5000/job-12]
+1074353eec0d: Layer already exists
+522560f13f9b: Layer already exists
+4f4fb700ef54: Layer already exists
+736c3ba268cb: Pushed
+9e4742745279: Layer already exists
+2df2a23c24ab: Pushed
+a4581c766c38: Layer already exists
+9962ce44e507: Pushed
+20260112-082333: digest: sha256:d15d0b8cd12182e9707bb253acb40da3509dab23d496d7cce049e7b5bb2ef5eb size: 856
+The push refers to repository [192.168.10.1:5000/job-12]
+9e4742745279: Layer already exists
+9962ce44e507: Layer already exists
+a4581c766c38: Layer already exists
+4f4fb700ef54: Layer already exists
+736c3ba268cb: Already exists
+2df2a23c24ab: Layer already exists
+522560f13f9b: Layer already exists
+1074353eec0d: Layer already exists
+latest: digest: sha256:d15d0b8cd12182e9707bb253acb40da3509dab23d496d7cce049e7b5bb2ef5eb size: 856
+Since --detach=false was not specified, tasks will be created in the background.
+In a future release, --detach=false will become the default.
+Creating network job-12_default
+Creating service job-12_job
+ID             NAME         MODE         REPLICAS   IMAGE                             PORTS
+xsdzm2r2z8a4   job-12_job   replicated   0/1        192.168.10.1:5000/job-12:latest   
+JOBID: job-12
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 147B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine
+#2 DONE 0.5s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 445B done
+#4 DONE 0.0s
+
+#5 [1/4] FROM docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146
+#5 resolve docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146 0.0s done
+#5 CACHED
+
+#6 [2/4] ADD . /code
+#6 DONE 0.0s
+
+#7 [3/4] WORKDIR /code
+#7 DONE 0.0s
+
+#8 [4/4] RUN pip install -r requirements.txt
+#8 2.462 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 2.686 
+#8 2.686 [notice] A new release of pip is available: 25.0.1 -> 25.3
+#8 2.686 [notice] To update, run: pip install --upgrade pip
+#8 DONE 2.8s
+
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 0.5s done
+#9 exporting manifest sha256:1f9f2d907efe396e10f76ea2fdfa7349f433ec09928d4faefe410b0137513f36 done
+#9 exporting config sha256:59b8a3a0af735c44939a63193a103b5f20f9d1788d64d505c3001e7c9361f95a done
+#9 exporting attestation manifest sha256:c525e9fb844cf990a3512616e41a98bcf1e96387730d68b9355b9b6fbcfd9b99 0.0s done
+#9 exporting manifest list sha256:272bb8993db8b19cc71c79780ad49ab2215120aa2573ee78f16ecb7f87de1bf3 0.0s done
+#9 naming to docker.io/library/job-13:20260112-082408
+#9 naming to docker.io/library/job-13:20260112-082408 done
+#9 unpacking to docker.io/library/job-13:20260112-082408
+#9 unpacking to docker.io/library/job-13:20260112-082408 0.3s done
+#9 DONE 1.0s
+The push refers to repository [192.168.10.1:5000/job-13]
+e34646b80ed2: Pushed
+30401f5fd001: Pushed
+a4581c766c38: Pushed
+4f4fb700ef54: Pushed
+1074353eec0d: Pushed
+9e4742745279: Pushed
+6c4ec1a1dc61: Pushed
+522560f13f9b: Pushed
+20260112-082408: digest: sha256:272bb8993db8b19cc71c79780ad49ab2215120aa2573ee78f16ecb7f87de1bf3 size: 856
+The push refers to repository [192.168.10.1:5000/job-13]
+6c4ec1a1dc61: Already exists
+e34646b80ed2: Layer already exists
+522560f13f9b: Layer already exists
+30401f5fd001: Layer already exists
+1074353eec0d: Layer already exists
+9e4742745279: Layer already exists
+4f4fb700ef54: Layer already exists
+a4581c766c38: Layer already exists
+latest: digest: sha256:272bb8993db8b19cc71c79780ad49ab2215120aa2573ee78f16ecb7f87de1bf3 size: 856
+Since --detach=false was not specified, tasks will be created in the background.
+In a future release, --detach=false will become the default.
+Creating network job-13_default
+Creating service job-13_job
+ID             NAME         MODE         REPLICAS   IMAGE                             PORTS
+kvw7m7ep2s7y   job-13_job   replicated   0/1        192.168.10.1:5000/job-13:latest   
+JOBID: job-13
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 147B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine
+#2 DONE 0.5s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 446B done
+#4 DONE 0.0s
+
+#5 [1/4] FROM docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146
+#5 resolve docker.io/library/python:3.12-alpine@sha256:68d81cd281ee785f48cdadecb6130d05ec6957f1249814570dc90e5100d3b146 0.0s done
+#5 CACHED
+
+#6 [2/4] ADD . /code
+#6 DONE 0.0s
+
+#7 [3/4] WORKDIR /code
+#7 DONE 0.0s
+
+#8 [4/4] RUN pip install -r requirements.txt
+#8 2.549 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 2.690 
+#8 2.690 [notice] A new release of pip is available: 25.0.1 -> 25.3
+#8 2.690 [notice] To update, run: pip install --upgrade pip
+#8 DONE 2.8s
+
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 0.7s done
+#9 exporting manifest sha256:8c68568d8bfdfd47257cea60a2f2918e4314047e037123cf3318c17b20b84a46 0.0s done
+#9 exporting config sha256:e884fa7f76cef1c37740456f98f97882bd0805ab386c1301621e1dd3765bd7d6 0.0s done
+#9 exporting attestation manifest sha256:a906ad6c49912c8a9e132d9afbc2c3e566408feef665ddc1d32bcb47dd9a9ae2 0.0s done
+#9 exporting manifest list sha256:1a0744657bea800d3a748595600deab6aac623a0015c459486ba84be8aba3119 0.0s done
+#9 naming to docker.io/library/job-14:20260112-082510 done
+#9 unpacking to docker.io/library/job-14:20260112-082510
+#9 unpacking to docker.io/library/job-14:20260112-082510 0.2s done
+#9 DONE 1.1s
+The push refers to repository [192.168.10.1:5000/job-14]
+9e4742745279: Layer already exists
+3edf9bb32caa: Pushed
+d1e9e42dfce6: Pushed
+522560f13f9b: Layer already exists
+08e6dbe97793: Pushed
+4f4fb700ef54: Layer already exists
+1074353eec0d: Layer already exists
+a4581c766c38: Layer already exists
+20260112-082510: digest: sha256:1a0744657bea800d3a748595600deab6aac623a0015c459486ba84be8aba3119 size: 856
+The push refers to repository [192.168.10.1:5000/job-14]
+08e6dbe97793: Layer already exists
+522560f13f9b: Layer already exists
+4f4fb700ef54: Layer already exists
+3edf9bb32caa: Already exists
+1074353eec0d: Layer already exists
+d1e9e42dfce6: Layer already exists
+a4581c766c38: Layer already exists
+9e4742745279: Layer already exists
+latest: digest: sha256:1a0744657bea800d3a748595600deab6aac623a0015c459486ba84be8aba3119 size: 856
+Since --detach=false was not specified, tasks will be created in the background.
+In a future release, --detach=false will become the default.
+Creating network job-14_default
+Creating service job-14_job
+ID             NAME         MODE         REPLICAS   IMAGE                             PORTS
+kmppu5olzndt   job-14_job   replicated   0/1        192.168.10.1:5000/job-14:latest   
+JOBID: job-14

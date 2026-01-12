@@ -1,0 +1,9 @@
+# Manager node
+192.168.10.1
+
+# Worker nodes
+# user IP pass
+vincent 192.168.10.2 vincent
+
+vincent 192.168.10.3 vincent
+vincent 192.168.10.4 vincent

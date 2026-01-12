@@ -17,7 +17,7 @@ p {
 }
 
 .basic-button {
-  width: 95px;
+  /* width: 95px; */
   height: 27.6px;
   font-size: 14px;
 }
@@ -58,3 +58,43 @@ p {
   box-shadow: none !important;
   background: none !important;
 }
+
+.popup {
+  /* height: 200px; */
+  height: auto;
+  min-height: unset;
+  max-height: none;
+  
+  width: 300px;
+  overflow: visible;
+}
+
+
+
+.modul-overlay{
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+}
+
+.window.popup {
+  overflow: visible;
+}
+/* .interactive tbody {
+  display: block;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.interactive{
+  display: table;
+  width: 100%; 
+  table-layout: fixed;
+} */
+

@@ -8,3 +8,7 @@ frontend/.env
 # Local configs
 nodes.cnf
 hosts
+
+# Benchmarks
+example_programs/IntelMPIBenchmarks
+example_programs/NPB
