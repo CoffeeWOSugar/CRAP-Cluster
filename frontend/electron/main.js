@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain} = require('electron');
+const { app, BrowserWindow, ipcMain, dialog} = require('electron');
 const path = require('path');
 const { Client } = require('ssh2');
 const fs = require('fs');
@@ -62,6 +62,14 @@ ipcMain.handle('connect-ssh', async (event, { host, privateKeyPath, username }) 
   });
 });
 
+//open file dialog
+ipcMain.handle("open-file-dialog", async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ["openDirectory", "multiSelections"], // or openDirectory
+  });
+
+  return result;
+});
 
 //execute command on ssh-client
 ipcMain.handle('ssh-exec', async (event, command) => {

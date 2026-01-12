@@ -4,9 +4,11 @@ import '../style.css';
 import { handleAvailableIPs, handleNewNode, handleRemoveNode, handleConnectNodes} from '../features/server';
 import useAnimatedDots from '../components/loadingAnimation';
 import Popup from '../components/inputPopup';
+import { useNavigate } from 'react-router-dom';
+
 
 const Configure = () => {
-
+  const navigate = useNavigate();
   const [ips, setIps] = useState([]);
   const [connectedIps, setConnectedIps] = useState([]);
   const [currentHost, setCurrentHost] = useState(null);
@@ -85,7 +87,7 @@ const Configure = () => {
       <div className='window'>
         <div className='title-bar'>
           <div className="title-bar-text">CRAP</div>
-          <div className='title-bar-text'>Home</div>
+          <div className='title-bar-text'>Configure</div>
           <div className="title-bar-controls">
             <button aria-label="Close" onClick={() => window.electronAPI.close()} />
           </div>
@@ -94,7 +96,7 @@ const Configure = () => {
         <div className="window-body" style={{ textAlign: "left" }}>
 
           <h2>Configuration</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id sapien condimentum, blandit velit in, luctus magna. Vivamus at sapien eu ante ullamcorper finibus. Praesent finibus arcu elit, ac condimentum massa interdum in. Ut porttitor augue nunc, vehicula finibus purus auctor eget. Proin convallis tincidunt sem vel accumsan. Suspendisse suscipit urna quam, at efficitur erat mollis sit amet.</p>
+          <p>View the nodes of the cluster in the table below. If necessary, configure your cluster by adding, removing or connecting nodes to the cluster </p>
           <div className="field-row-stacked" style={{ width: "400px", height: "150px", background: "white" }}>
             <table className="interactive" >
               <thead style={{ fontSize: "14px" }}>
@@ -134,8 +136,23 @@ const Configure = () => {
               {isConnecting ? `Connecting${dots}` : 'Connect'}
             </button>
           </div>
-                
-
+          <div className="field-row" style={{width: "auto", height: "15%"}}>
+            <button 
+              className='basic-button'
+              style={{marginright: "auto", marginTop: "auto"}}
+              onClick={() => navigate('/')} 
+              >
+                Back
+            </button>
+            <button 
+              className='basic-button'
+              // style={{marginLeft: "auto", marginTop: "auto"}}
+              style={{marginTop: "auto"}}
+              onClick={() => navigate('/schedule')} 
+              >
+                Next
+            </button>
+          </div>
         </div>
       </div>
     </>

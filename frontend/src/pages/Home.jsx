@@ -58,8 +58,11 @@ const Home = () => {
 
       <div className="window-body" style={{ textAlign: "left"}}>
         <AasciArt />
-        <p>Welcome to the <strong>Circular Resource-limited Application Platform Cluster</strong>!</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id sapien condimentum, blandit velit in, luctus magna. Vivamus at sapien eu ante ullamcorper finibus. Praesent finibus arcu elit, ac condimentum massa interdum in. Ut porttitor augue nunc, vehicula finibus purus auctor eget. Proin convallis tincidunt sem vel accumsan. Suspendisse suscipit urna quam, at efficitur erat mollis sit amet.</p>
+        <p>Welcome to the <strong>Circular Resource-limited Application Platform</strong> Cluster!</p>
+        {/* <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id sapien condimentum, blandit velit in, luctus magna. Vivamus at sapien eu ante ullamcorper finibus. Praesent finibus arcu elit, ac condimentum massa interdum in. Ut porttitor augue nunc, vehicula finibus purus auctor eget. Proin convallis tincidunt sem vel accumsan. Suspendisse suscipit urna quam, at efficitur erat mollis sit amet.</p> */}
+        <p>Welcome to the Circular Resource-limited Application Platform Cluster GUI! This GUI enables simple and efficient setup of your CRAP cluster while also providing a scheduling and monitoring tools. <br/>
+         To get started, please make a SSH key exchange with your intended manager node and connect to it below and proceed to next page when ready
+        </p>
         <div className="field-row-stacked" style={{width: "200px"}}>
           <label style={{fontSize: "14px"}} htmlFor="textHost">Hostname</label>
           <input style={{fontSize: "14px", height: "24px", width: "200px"}} id="textHost" type="text" placeholder="e.g., user@127.0.0.1"/>
