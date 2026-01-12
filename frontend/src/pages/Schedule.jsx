@@ -7,12 +7,19 @@ import { useNavigate } from 'react-router-dom';
 const Schedule = () => {
   const [jobDirectory, setJobDirectory] = useState("");
   const navigate = useNavigate();
-  const [gpu, setGpu] = useState("unspecified");
-  const [cpuPower, setCpuPower] = useState("unspecified");
-  const [memory, setMemory] = useState("unspecified");
   const [errors, setErrors] = useState({
     directory: "",
     run: "",
+  });
+  const [flags, setFlags] = useState({
+    gpu: null,
+    cpuPower: null,
+    memory: null,
+    timeout:"1h",
+    day: null,
+    time: null,
+    dom: null,
+    cron: null
   });
 
   const openExplorer = async () => {
@@ -22,6 +29,73 @@ const Schedule = () => {
       setJobDirectory(result.filePaths[0]);
       console.log("Selected directory:", result.filePaths[0]);
     }
+  };
+
+function dayNameToDow(day) {
+  const map = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6
+  };
+
+  return map[day.toLowerCase()] ?? null;
+}
+
+const toCron = (repeat) => {
+  if (!flags.time || !repeat) return;
+
+  const [hour, minute] = flags.time.split(":");
+
+  let cron = "";
+
+  switch (repeat) {
+    case "hour":
+      cron = `${minute} * * * *`;
+      break;
+
+    case "day":
+      cron = `${minute} ${hour} * * *`;
+      break;
+
+    case "week":
+
+      cron = `${minute} ${hour} * * ${dayNameToDow(flags.day)}`;
+      break;
+
+    case "month":
+      cron = `${minute} ${hour} ${flags.dom} * *`;
+      break;
+
+    default:
+      return;
+  }
+
+  setFlags(prev => ({
+    ...prev,
+    cron
+  }));
+};
+
+
+
+  const updateFlag = (key, value) => {
+    if (key === "day") {
+      const date = new Date(value);
+      setFlags(prev => ({
+        ...prev,
+        ["dom"]: date.getDate()
+      }));
+      value = date.toLocaleDateString("en-US", { weekday: "long" });
+
+    }
+    setFlags(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
   const handleSubmit = () => {
@@ -43,8 +117,11 @@ const Schedule = () => {
     setErrors(newErrors);
 
     if (!hasError) {
+
+
       // All good — later you can trigger backend call
       //TODO: submit job to backend
+      console.log("flags: ", flags)
 
     }
   };
@@ -98,11 +175,11 @@ const Schedule = () => {
             <div>
               <label style={{ display: "block", marginBottom: "4px" }}>GPU</label>
               <select
-                value={gpu}
-                onChange={(e) => setGpu(e.target.value)}
+                value={flags.gpu}
+                onChange={(e) => updateFlag("gpu", e.target.value)}
                 style={{ width: "100%" }}
               >
-                <option value="unspecified">Unspecified</option>
+                <option value={null}>Unspecified</option>
                 <option value="true">True</option>
                 <option value="false">False</option>
               </select>
@@ -113,11 +190,11 @@ const Schedule = () => {
                 CPU Power
               </label>
               <select
-                value={cpuPower}
-                onChange={(e) => setCpuPower(e.target.value)}
+                value={flags.cpuPower}
+                onChange={(e) => updateFlag("cpuPower", e.target.value)}
                 style={{ width: "100%" }}
               >
-                <option value="unspecified">Unspecified</option>
+                <option value={null}>Unspecified</option>
                 <option value="small">Small</option>
                 <option value="med">Medium</option>
                 <option value="large">Large</option>
@@ -130,11 +207,11 @@ const Schedule = () => {
                 Memory
               </label>
               <select
-                value={memory}
-                onChange={(e) => setMemory(e.target.value)}
+                value={flags.memory}
+                onChange={(e) => updateFlag("memory", e.target.value)}
                 style={{ width: "100%" }}
               >
-                <option value="unspecified">Unspecified</option>
+                <option value={null}>Unspecified</option>
                 <option value="small">Small</option>
                 <option value="med">Medium</option>
                 <option value="large">Large</option>
@@ -164,11 +241,16 @@ const Schedule = () => {
                   min="0"
                   defaultValue={1}            // default to 1
                   style={{ width: "80px", fontSize: "14px" }}
+                  onChange={(e) => updateFlag("timeout", e.target.value)}
                 />
 
-                <select style={{ width: "80px", fontSize: "14px" }} defaultValue="h">
-                  <option value="sec">sec</option>
-                  <option value="min">min</option>
+                <select 
+                  style={{ width: "80px", fontSize: "14px" }} 
+                  defaultValue="h"
+                  onChange={(e) => updateFlag("timeout",  flags.timeout + e.target.value)}
+                >
+                  <option value="s">sec</option>
+                  <option value="m">min</option>
                   <option value="h">h</option>
                 </select>
               </div>
@@ -182,10 +264,15 @@ const Schedule = () => {
 
               <div className="field-row" style={{ marginLeft: "20px", marginTop: "4px" }}>
                 <label>Date</label>
-                <input type="date" />
+                <input 
+                  type="date"
+                  onChange={(e)=>updateFlag("day", e.target.value)} />
 
                 <label>Time</label>
-                <input type="time" />
+                <input 
+                  type="time" 
+                  onChange = {(e)=>updateFlag("time", e.target.value)}
+                  />
               </div>
               {errors.run && (
                 <div style={{ color: "red", marginLeft: "20px", fontSize: "12px" }}>
@@ -204,12 +291,15 @@ const Schedule = () => {
                 <label>Every</label>
                 {/* <input type="date"  /> */}
 
-                <select>
-                  <option>-</option>
-                  <option>hour</option>
-                  <option>Day</option>
-                  <option>Week</option>
-                  <option>Month</option>
+                <select 
+                  onChange={(e) => {
+                    toCron(e.target.value);
+                    }}>
+                  <option value = {null}></option>
+                  <option value="hour">Hour</option>
+                  <option value="day">Day</option>
+                  <option value="week">Week</option>
+                  <option value="month">Month</option>
                 </select>
               </div>
             </div>
