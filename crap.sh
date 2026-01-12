@@ -134,7 +134,7 @@ schedule() {
   # shift
 
   if [[ "$1" == "help" || $# -lt 1 ]]; then
-    echo "Usage: ./crap.sh schedule <program_path> [options]"
+    echo "Usage: ./crap.sh schedule -path <job_path> [options]"
     echo
     echo "Options:"
     echo "    -timeout DURATION		  Terminate program after some time"
