@@ -260,13 +260,10 @@ label-nodes)
 show-labels)
   show-labels
   ;;
-submit-job)
-  submit-job "$@" #pass remaining arguments
-  ;;
 job-wait)       #wait for job to finish and cleanup
   job-wait "$@" #pass remaining arguments
   ;;
-schedule-job)
+schedule)
   schedule "$@"
   ;;
 *)
