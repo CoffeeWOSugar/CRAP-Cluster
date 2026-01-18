@@ -1,7 +1,12 @@
+// import { exec } from "child_process"; 
 const { app, BrowserWindow, ipcMain, dialog} = require('electron');
 const path = require('path');
 const { Client } = require('ssh2');
+const SftpClient = require('ssh2-sftp-client');
 const fs = require('fs');
+const dotenv = require('dotenv');
+dotenv.config();
+
 
 const isDev = !app.isPackaged;
 let win;
@@ -35,6 +40,8 @@ ipcMain.on('close-window', () => {
 
 // connect and save client connection.
 let sshClient = null;
+let currentSSHHost = null;
+let currentSSHName = null;
 
 ipcMain.handle('connect-ssh', async (event, { host, privateKeyPath, username }) => {
   return new Promise((resolve, reject) => {
@@ -59,6 +66,8 @@ ipcMain.handle('connect-ssh', async (event, { host, privateKeyPath, username }) 
         username,
         privateKey: fs.readFileSync(privateKeyPath)
       });
+    currentSSHHost = host;
+    currentSSHName = username;
   });
 });
 
@@ -108,6 +117,67 @@ ipcMain.handle('disconnect-ssh', () => {
     sshClient = null;
   }
   return 'Disconnected';
+});
+
+async function uploadFolder(localFolder, remoteFolder) {
+  const sftp = new SftpClient();
+
+  try {
+    await sftp.connect({
+      host: currentSSHHost,           // your server
+      username: currentSSHName,              // your SSH user
+      privateKey: fs.readFileSync(process.env.VITE_PRIVATE_KEY_PATH), // use your SSH private key
+      // password: "your_password",  // alternative (less secure)
+    });
+      const folderName = path.basename(localFolder); 
+      const remotePath = path.posix.join(remoteFolder, folderName);
+    // Upload local folder to remote
+    await sftp.uploadDir(localFolder, remotePath);
+    console.log("Upload successful!");
+    return "success";
+  } catch (err) {
+    console.error("Upload failed:", err);
+    throw err;
+  } finally {
+    sftp.end();
+  }
+}
+
+ipcMain.handle("upload-folder", async (_, localFolder, remoteFolder) => {
+  return uploadFolder(localFolder, remoteFolder);
+});
+
+async function downloadFile(remoteFilePath, localDownloadDir) {
+  const sftp = new SftpClient();
+
+  try {
+    await sftp.connect({
+      host: currentSSHHost,
+      username: currentSSHName,
+      privateKey: fs.readFileSync(process.env.VITE_PRIVATE_KEY_PATH),
+    });
+
+    const fileName = path.posix.basename(remoteFilePath);
+    const localFilePath = path.join(localDownloadDir, fileName);
+
+    // Ensure local download directory exists
+    fs.mkdirSync(localDownloadDir, { recursive: true });
+
+    // Download file
+    await sftp.fastGet(remoteFilePath, localFilePath);
+
+    console.log("File downloaded successfully!");
+    return "success";
+  } catch (err) {
+    console.error("Download failed:", err);
+    throw err;
+  } finally {
+    sftp.end();
+  }
+}
+
+ipcMain.handle("download-file", async (_, remoteFilePath, localDownloadDir) => {
+  return downloadFile(remoteFilePath, localDownloadDir);
 });
 
 app.whenReady().then(createWindow);

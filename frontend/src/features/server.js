@@ -1,3 +1,4 @@
+
 const privateKeyPath = import.meta.env.VITE_PRIVATE_KEY_PATH;
 
 export const handleConnect = async (input) => {
@@ -72,7 +73,7 @@ export const handleRemoveNode = async (username, host) => {
   const line = `${username} ${host}`;
   try {
 
-   const cmd = `
+    const cmd = `
       # Find the line in nodes.cnf
       cd "$(find ~ -type d -path "*/CRAP-Cluster/config" | head -n 1)" || exit 1
       node_line=$(grep -E "^[[:space:]]*${username}[[:space:]]+${host}[[:space:]]+" nodes.cnf || true)
@@ -113,7 +114,7 @@ export const handleRemoveNode = async (username, host) => {
 
 export const handleConnectNodes = async () => {
   try {
-  const cmd = `
+    const cmd = `
       cd "$(find ~ -type d -path "*/CRAP-Cluster" | head -n 1)" || exit 1
       ./crap.sh swarm-init
   `
@@ -123,3 +124,110 @@ export const handleConnectNodes = async () => {
   }
 }
 
+
+export const handleSCPJob = async (localPath) => {
+  console.log("Submitting job...");
+  let remotePath = "";
+  const remotePathCmd = `
+    echo "$(find ~ -type d -path "*/CRAP-Cluster/jobs" | head -n 1)"
+  `;
+  try {
+    remotePath = await window.electronAPI.execSSH(remotePathCmd);
+    remotePath = remotePath.replace(/\$/g, "").replace(/\r?\n/g, "").replace(/'/g, "").trim();
+    const result = await window.electronAPI.uploadFolder(localPath, remotePath);
+    console.log("Job submission result:", result);
+  } catch (err) {
+    console.error("Job submission failed:", err);
+  }
+  console.log("Job submitted.");
+  return remotePath;
+
+};
+
+export const handleJobSubmission = async (remotePath, flags) => {
+  console.log(flags);
+
+
+  let cmd = './crap.sh schedule -timeout ' + flags.timeout;
+  if (!flags.cron) {
+    cmd += ' -time ' + flags.time + ' ' + flags.day;
+  }
+  if (flags.cron) {
+    cmd += ' -repeat ' + flags.cron;
+  }
+  if (flags.gpu) {
+    cmd += ' gpu=' + flags.gpu;
+  }
+  if (flags.cpuPower) {
+    cmd += ' cpu=' + flags.cpuPower;
+  }
+  if (flags.memory) {
+    cmd += ' mem=' + flags.memory;
+  }
+  cmd += ' -path ' + remotePath;
+  console.log("Submitting job with flags:", cmd);
+
+  const fullCmd = `
+      cd "$(find ~ -type d -path "*/CRAP-Cluster" | head -n 1)" || exit 1
+      ${cmd}
+  `
+
+  try {
+    const result = await window.electronAPI.execSSH(fullCmd);
+    // return result;
+    console.log("Job scheduling result:", result);
+  } catch (err) {
+    console.error("Job scheduling failed.");
+  }
+}
+
+export const handleAvailableJobs = async () => {
+  const cmd = `
+      cd "$(find ~ -type d -path "*/CRAP-Cluster/aux_scripts" | head -n 1)" || exit 1
+      ./monitor_jobs.sh
+    `
+  try {
+    const jobsOutput = await window.electronAPI.execSSH(cmd);
+    const jobs = jobsOutput
+      .split('\n')                // split into lines
+      .map(s => s.trim())         // remove extra spaces
+      .filter(Boolean)            // remove empty lines
+      .map(line => {
+        const [jobid, date, time, status] = line.split(' ');
+        return { jobid, date, time, status };
+      });
+
+    return jobs;
+  } catch (err) {
+    console.error("Failed to fetch jobs:", err);
+    return {};
+  }
+}
+
+export const handleJobResult = async (jobId) => {
+    
+  const jobPathCMD= `
+    echo "$(find ~ -type d -path "*/CRAP-Cluster/output" | head -n 1)"
+  ` 
+  const finishJobCMD = `
+      cd "$(find ~ -type d -path "*/CRAP-Cluster" | head -n 1)" || exit 1
+       ./crap.sh job-wait ${jobId}
+    `
+  let jobPath = '';
+  try{
+    await window.electronAPI.execSSH(finishJobCMD);
+    jobPath = await window.electronAPI.execSSH(jobPathCMD);
+    jobPath = jobPath.replace(/\$/g, "").replace(/\r?\n/g, "").replace(/'/g, "").trim();
+    jobPath += `/${jobId}.out`;
+    
+  } catch (err) {
+    console.error("Failed to fetch job result:", err);
+  }
+
+  try{
+    await window.electronAPI.downloadFile(jobPath, 'downloads');
+    
+  } catch (err) {
+    console.error("Failed to download job result")
+  }
+}

@@ -2,10 +2,13 @@ import "98.css";
 import "../style.css";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { handleJobSubmission, handleSCPJob } from "../features/server.js";
+import useAnimatedDots from "../components/loadingAnimation.jsx";
 
 
 const Schedule = () => {
   const [jobDirectory, setJobDirectory] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false); // optional: track loading
   const navigate = useNavigate();
   const [errors, setErrors] = useState({
     directory: "",
@@ -21,6 +24,9 @@ const Schedule = () => {
     dom: null,
     cron: null
   });
+
+  const dots = useAnimatedDots(isConnecting);
+  
 
   const openExplorer = async () => {
     const result = await window.electronAPI.openFileDialog();
@@ -83,13 +89,23 @@ const toCron = (repeat) => {
 
 
   const updateFlag = (key, value) => {
+    if (value === "") value = null;
     if (key === "day") {
       const date = new Date(value);
+      const today = new Date();
+
+      today.setHours(0, 0, 0, 0);
+      date.setHours(0, 0, 0, 0);
+
       setFlags(prev => ({
         ...prev,
         ["dom"]: date.getDate()
       }));
-      value = date.toLocaleDateString("en-US", { weekday: "long" });
+      if (date.getTime() === today.getTime()) {
+        value = "today";
+      } else {
+        value = date.toLocaleDateString("en-US", { weekday: "long" });
+      }
 
     }
     setFlags(prev => ({
@@ -98,7 +114,8 @@ const toCron = (repeat) => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
+    setIsConnecting(true);
     let newErrors = { directory: "", run: "" };
     let hasError = false;
 
@@ -122,8 +139,12 @@ const toCron = (repeat) => {
       // All good — later you can trigger backend call
       //TODO: submit job to backend
       console.log("flags: ", flags)
+      let remotePath = await handleSCPJob(jobDirectory);
+      remotePath += "/" + jobDirectory.split("/").pop();
+      handleJobSubmission(remotePath, flags);
 
     }
+    setIsConnecting(false);
   };
 
 
@@ -179,7 +200,7 @@ const toCron = (repeat) => {
                 onChange={(e) => updateFlag("gpu", e.target.value)}
                 style={{ width: "100%" }}
               >
-                <option value={null}>Unspecified</option>
+                <option value="">Unspecified</option>
                 <option value="true">True</option>
                 <option value="false">False</option>
               </select>
@@ -194,9 +215,9 @@ const toCron = (repeat) => {
                 onChange={(e) => updateFlag("cpuPower", e.target.value)}
                 style={{ width: "100%" }}
               >
-                <option value={null}>Unspecified</option>
+                <option value="">Unspecified</option>
                 <option value="small">Small</option>
-                <option value="med">Medium</option>
+                <option value="medium">Medium</option>
                 <option value="large">Large</option>
                 <option value="xlarge">XLarge</option>
               </select>
@@ -211,9 +232,9 @@ const toCron = (repeat) => {
                 onChange={(e) => updateFlag("memory", e.target.value)}
                 style={{ width: "100%" }}
               >
-                <option value={null}>Unspecified</option>
+                <option value="">Unspecified</option>
                 <option value="small">Small</option>
-                <option value="med">Medium</option>
+                <option value="medium">Medium</option>
                 <option value="large">Large</option>
                 <option value="xlarge">XLarge</option>
               </select>
@@ -295,7 +316,7 @@ const toCron = (repeat) => {
                   onChange={(e) => {
                     toCron(e.target.value);
                     }}>
-                  <option value = {null}></option>
+                  <option value = ""> </option>
                   <option value="hour">Hour</option>
                   <option value="day">Day</option>
                   <option value="week">Week</option>
@@ -316,16 +337,15 @@ const toCron = (repeat) => {
             <button 
               className='basic-button'
               style={{ marginRight: "auto",marginTop: "auto"}}
-              onClick={() => navigate('/configure')} 
+              onClick={() => navigate('/result')} 
               >
                 Next
             </button>
 
-          <button className='basic-button' onClick={handleSubmit}>
-            Submit job
+          <button className='basic-button' onClick={handleSubmit} disabled={isConnecting}>
+             {isConnecting ? `Submitting${dots}` : 'Submit'}
           </button>
         </div>
-
 
 
       </div>
