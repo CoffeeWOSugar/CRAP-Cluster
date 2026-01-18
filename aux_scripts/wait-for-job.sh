@@ -24,20 +24,22 @@ else
   exit
 fi
 
-# wait to complet0
+# wait to complet
 while true; do
   state=$(docker stack ps $JOBID --format '{{.CurrentState}}' | head -n1)
   echo "$state"
   [[ "$state" == *"Complete"* ]] && break
+  [[ "$state" == *"Rejected"* ]] && break
   sleep 5
 done
 
 # redirect output
 #docker service logs ${JOBID}_app >~/src/CRAP-Cluster.ebba/${jobname}.out 2>&1
+OUTFILE="$OUTDIR/$JOBID.out"
 for s in $(docker stack services $JOBID --format '{{.Name}}'); do
-  docker service logs "$s" >"$OUTDIR/$s.out" 2>&1
-  echo "Output written to: $OUTDIR/$s.out"
+  docker service logs "$s" >>"$OUTFILE" 2>&1
 done
+echo "Output written to: $OUTFILE"
 
 # cleanup
 docker stack rm $JOBID >/dev/null
