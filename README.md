@@ -47,12 +47,39 @@ user IP-adress password
 
 INSTRUCTIONS
 
+The CRAP-Cluster project is a tool for node connection, cluster configuration, and job scheduling, designed with heterogeneous clusters in mind. 
+
+To use, run ./crap.sh
+This will display a help text and options for setting up the cluster as well as scheduling jobs.
+
+The nodes must be reachable from each other, preferably connected via a network switch to allow connection from the manager node via ssh. 
+
+
+### EXAMPLE
+Setting up the cluster and swarm
+./crap.sh cluster-up
+./crap.sh swarm-init
+
+Scheduling a job with no constraints
+./crap.sh schedule -path jobs/DockerStackDemo
+
+Scheduling a job on node with GPU at 12:00 today
+./crap.sh schedule \
+    -path jobs/HelloWorldMPIStack \
+    -time 12:00 today \
+    gpu=true
+
 
 ---
 
 ## Tech Stack
 
-LIST HERE
+
+- Docker 
+- Docker Swarm 
+- React
+- Vite.js
+- Electron
 
 ---
 

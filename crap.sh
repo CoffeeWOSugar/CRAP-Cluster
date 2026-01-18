@@ -130,7 +130,13 @@ schedule() {
   PROGRAM_PATH=$SCRIPT_FOLDER/schedule.sh
   PROGRAM_PATH=$(realpath "$PROGRAM_PATH")
   LOG_FILE=$(realpath "cron.log")
-  echo "$PROGRAM_PATH"
+
+  REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+  JOBID="job-$(cat $REPO_ROOT/config/job_id)"
+  echo $((${JOBID#job-} + 1)) >$REPO_ROOT/config/job_id
+
+  echo "JOBID: $JOBID"
+
   # shift
 
   if [[ "$1" == "help" || $# -lt 1 ]]; then
@@ -176,6 +182,7 @@ schedule() {
       ;;
     -path)
       shift
+      #JOB_PATH="$1"
       JOB_PATH="$(realpath "$1")"
       echo $JOB_PATH
       shift
@@ -187,16 +194,32 @@ schedule() {
   done
 
   # build  Command
+  CMD=("$PROGRAM_PATH" "$JOB_PATH" "$JOBID" "$@")
   if [[ -n "$TIMEOUT" ]]; then
-    CMD="timeout $TIMEOUT $JOB_PATH $PROGRAM_PATH $* >> $LOG_FILE 2>&1"
+    #CMD=(timeout "$TIMEOUT" "{CMD[@]}")
+    CMD="timeout $TIMEOUT $PROGRAM_PATH $JOB_PATH $JOBID $* >> $LOG_FILE 2>&1"
   else
-    CMD="$PROGRAM_PATH $JOB_PATH $* >> $LOG_FILE 2>&1"
+    CMD="$PROGRAM_PATH $JOB_PATH $JOBID $* >> $LOG_FILE 2>&1"
   fi
+  #"{CMD[@}" >>"$LOG_FILE" 2>&1
+
+  # Validate labels
+  for arg in "$@"; do
+    key=${arg%%=*}
+    val=${arg#*=}
+
+    docker node inspect $(docker node ls -q) \
+      --format '{{ .Spec.Labels }}' | grep -q "$key:$val" || {
+      echo "No nodes match $key=$val"
+      exit 1
+    }
+  done
 
   echo "Scheduling $CMD"
   # One-time job
+
   if [[ "$MODE" == "at" ]]; then
-    echo "$CMD" | at "$AT_TIME"
+    jobid=$(echo "$CMD" | at "$AT_TIME" | awk '{print $2}')
     echo "All queued one-time jobs:"
     atq
     return 0
@@ -218,8 +241,11 @@ schedule() {
     crontab -l
   fi
   # Run immediately
-  if [[ -n "$MODE" ]]; then
-    submit-job "$@"
+  if [[ "$MODE" == "" ]]; then
+    echo "Submitting immediately"
+    echo "$@"
+    echo "$JOB_PATH"
+    submit-job "$JOB_PATH $JOBID $@"
   #JOB_PATH="$(realpath "$1")0
   fi
   #FIND JOBID????????

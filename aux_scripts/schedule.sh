@@ -8,11 +8,10 @@ set -euo pipefail
 
 # ----- VARIABLES
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-JOBID="job-$(cat $REPO_ROOT/config/job_id)"
-outdir=$(realpath $(dirname $0)) # CHANGE TO REPO_ROOT/output
+#JOBID="job-$(cat $REPO_ROOT/config/job_id)"
+#outdir=$(realpath $(dirname $0)) # CHANGE TO REPO_ROOT/output
 REG=192.168.10.1:5000
 TAG=$(date +%Y%m%d-%H%M%S)
-IMAGE=$JOBID
 PLACEMENT_BLOCK=""
 COMPOSEFILE=$REPO_ROOT/config/compose.yaml.in # Template compose-file
 
@@ -51,8 +50,19 @@ if [[ "$#" == 0 || "$1" == "-h" ]]; then
 fi
 
 # ----- ARGUMENTS
-FOLDER=$1
-shift
+#JOB=$1
+echo "ARGS: $@"
+FOLDER="$1"
+JOBID="$2"
+IMAGE=$JOBID
+echo "$FOLDER"
+echo "JOBID: $JOBID"
+shift 2
+
+if [[ "$#" != 0 && "$1" == "mpi" ]]; then
+  COMPOSEFILE=$REPO_ROOT/config/compose_mpi.yaml.in # Template compose-file
+  shift
+fi
 
 # Increment JOBID
 echo $((${JOBID#job-} + 1)) >$REPO_ROOT/config/job_id
